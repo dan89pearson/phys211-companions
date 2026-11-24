@@ -8,28 +8,6 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous" onload="window.__katexReady && window.__katexReady()"></script>
   <style>
     :root {
-      --bg: #0c111a;
-      --surface: #141c2b;
-      --surface-alt: #1b2538;
-      --text: #edf2f9;
-      --text-muted: #9fb0c7;
-      --border: #28364e;
-      --primary: #3b82f6;
-      --primary-soft: rgba(59, 130, 246, 0.16);
-      --primary-dark: #2563eb;
-      --accent: #a78bfa;
-      --accent-soft: rgba(167, 139, 250, 0.16);
-      --ok-bg: rgba(34, 197, 94, 0.14);
-      --ok-border: #22c55e;
-      --ok-text: #86efac;
-      --warn-bg: rgba(251, 146, 60, 0.14);
-      --warn-border: #fb923c;
-      --warn-text: #fdba74;
-      --radius: 14px;
-      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-    }
-
-    [data-theme="light"] {
       --bg: #f6f8fb;
       --surface: #ffffff;
       --surface-alt: #f0f4fa;
@@ -47,7 +25,29 @@
       --warn-bg: #fff7ed;
       --warn-border: #ea580c;
       --warn-text: #7c2d12;
+      --radius: 14px;
       --shadow: 0 2px 10px rgba(20, 29, 43, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0c111a;
+      --surface: #141c2b;
+      --surface-alt: #1b2538;
+      --text: #edf2f9;
+      --text-muted: #9fb0c7;
+      --border: #28364e;
+      --primary: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.16);
+      --primary-dark: #2563eb;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.16);
+      --ok-bg: rgba(34, 197, 94, 0.14);
+      --ok-border: #22c55e;
+      --ok-text: #86efac;
+      --warn-bg: rgba(251, 146, 60, 0.14);
+      --warn-border: #fb923c;
+      --warn-text: #fdba74;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
     }
 
     * {
@@ -174,10 +174,9 @@
 
     .nav-strip {
       display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 6px;
       padding-bottom: 2px;
     }
 
@@ -187,8 +186,8 @@
 
     .prob-tab {
       flex: 0 0 auto;
-      min-height: 44px;
-      padding: 6px 12px;
+      min-height: 40px;
+      padding: 5px 10px;
       border-radius: 10px;
       border: 1.5px solid var(--border);
       background: var(--surface);
@@ -223,18 +222,7 @@
       color: var(--ok-text);
     }
 
-    .tab-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: currentColor;
-      opacity: 0.35;
-    }
 
-    .prob-tab.done .tab-dot,
-    .prob-tab.active .tab-dot {
-      opacity: 1;
-    }
 
     /* Main Card */
     .main-content {
@@ -303,15 +291,15 @@
     }
 
     .tier-pill.active {
-      background: #93c5fd;
-      border-color: #93c5fd;
-      color: #0b1220;
-    }
-
-    [data-theme="light"] .tier-pill.active {
       background: var(--primary);
       border-color: var(--primary);
       color: #ffffff;
+    }
+
+    [data-theme="dark"] .tier-pill.active {
+      background: #93c5fd;
+      border-color: #93c5fd;
+      color: #0b1220;
     }
 
     .tier-pill.solved:not(.active) {
@@ -372,6 +360,10 @@
       margin-bottom: 4px;
     }
 
+    .self-check-box.collapsed .self-check-header {
+      margin-bottom: 0;
+    }
+
     .self-check-label {
       font-size: 0.74rem;
       font-weight: 800;
@@ -381,15 +373,33 @@
     }
 
     .self-check-toggle {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--primary);
+      border: 1.5px solid var(--primary);
       border-radius: 999px;
-      padding: 3px 9px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-muted);
+      padding: 4px 13px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ffffff;
       cursor: pointer;
-      min-height: 28px;
+      min-height: 30px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.05s;
+    }
+
+    .self-check-toggle:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .self-check-toggle:active {
+      transform: scale(0.97);
+    }
+
+    .self-check-toggle[aria-pressed="true"] {
+      background: var(--ok-bg);
+      border-color: var(--ok-border);
+      color: var(--ok-text);
+      box-shadow: none;
     }
 
     .self-check-body {
@@ -592,9 +602,9 @@
           <h1 class="app-title">Torque &amp; Angular Momentum</h1>
         </div>
         <div class="header-center">
-          <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Switch between dark and light mode">
-            <span id="themeIcon">&#9728;&#65039;</span>
-            <span id="themeLabel">Light</span>
+          <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Switch between light and dark mode">
+            <span id="themeIcon">&#127769;</span>
+            <span id="themeLabel">Dark</span>
           </button>
         </div>
         <div class="header-right">
@@ -1142,16 +1152,16 @@
     const state = {
       probIdx: 0,
       tierIdx: 0, // 0..tiers.length-1, or 'twist'
-      hideSelfCheck: false,
-      theme: "dark", // default dark mode
+      paperFirstDone: {}, // key: stepKey -> boolean
+      theme: "light", // default light mode
       answers: {} // key: `${probId}:${tierKey}` -> { selectedId, solved }
     };
 
     function applyTheme(theme) {
-      const mode = theme === "light" ? "light" : "dark";
+      const mode = theme === "dark" ? "dark" : "light";
       state.theme = mode;
-      if (mode === "light") {
-        document.documentElement.setAttribute("data-theme", "light");
+      if (mode === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
       } else {
         document.documentElement.removeAttribute("data-theme");
       }
@@ -1176,6 +1186,9 @@
           if (parsed && typeof parsed.answers === "object") {
             state.answers = parsed.answers;
           }
+          if (parsed && typeof parsed.paperFirstDone === "object") {
+            state.paperFirstDone = parsed.paperFirstDone;
+          }
           if (parsed && (parsed.theme === "dark" || parsed.theme === "light")) {
             state.theme = parsed.theme;
           }
@@ -1188,6 +1201,7 @@
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({
           answers: state.answers,
+          paperFirstDone: state.paperFirstDone,
           theme: state.theme
         }));
       } catch (_) {}
@@ -1236,7 +1250,7 @@
         const btn = document.createElement("button");
         btn.type = "button";
         btn.className = "prob-tab" + (idx === state.probIdx ? " active" : "") + (done ? " done" : "");
-        btn.innerHTML = `<span class="tab-dot"></span><span>${prob.shortLabel}</span>`;
+        btn.innerHTML = `<span>${prob.shortLabel}</span>`;
         btn.addEventListener("click", () => {
           state.probIdx = idx;
           state.tierIdx = 0;
@@ -1258,6 +1272,8 @@
       const record = state.answers[stepKey] || { selectedId: null, solved: false };
 
       const card = document.getElementById("questionCard");
+      const requiresPaperFirst = !!activeItem.selfCheck;
+      const isPaperFirstDone = !requiresPaperFirst || !!state.paperFirstDone[stepKey];
 
       // Tier pills
       let tierPillsHtml = `<div class="tier-bar" role="tablist">`;
@@ -1281,24 +1297,27 @@
       }
       tierPillsHtml += `</div>`;
 
-      // Options
-      let optionsHtml = `<div class="options-list">`;
-      activeItem.options.forEach((opt) => {
-        let cls = "opt-btn";
-        if (record.selectedId === opt.id) {
-          cls += opt.isCorrect ? " selected-correct" : " selected-wrong";
-        }
-        optionsHtml += `
-          <button type="button" class="${cls}" data-opt="${opt.id}">
-            <span class="opt-letter">${opt.id}</span>
-            <span class="opt-body">${opt.text}</span>
-          </button>`;
-      });
-      optionsHtml += `</div>`;
+      // Options (hidden until Paper-First "Done" is clicked)
+      let optionsHtml = "";
+      if (isPaperFirstDone) {
+        optionsHtml = `<div class="options-list">`;
+        activeItem.options.forEach((opt) => {
+          let cls = "opt-btn";
+          if (record.selectedId === opt.id) {
+            cls += opt.isCorrect ? " selected-correct" : " selected-wrong";
+          }
+          optionsHtml += `
+            <button type="button" class="${cls}" data-opt="${opt.id}">
+              <span class="opt-letter">${opt.id}</span>
+              <span class="opt-body">${opt.text}</span>
+            </button>`;
+        });
+        optionsHtml += `</div>`;
+      }
 
       // Feedback
       let feedbackHtml = `<div class="feedback-box" id="feedbackBox"></div>`;
-      if (record.selectedId) {
+      if (isPaperFirstDone && record.selectedId) {
         const chosen = activeItem.options.find((o) => o.id === record.selectedId);
         if (chosen) {
           const kind = chosen.isCorrect ? "correct" : "wrong";
@@ -1337,6 +1356,8 @@
         ? `<p class="tier-heading twist-heading">${activeItem.title}</p>`
         : "";
 
+      const selfCheckBtnLabel = isPaperFirstDone ? "&#10003; Done" : "Done";
+
       card.innerHTML = `
         <div class="card-meta">
           <span class="paper-ref">${prob.paperRef}</span>
@@ -1346,12 +1367,12 @@
         ${headingHtml}
         <p class="question-text">${activeItem.question}</p>
         ${activeItem.selfCheck ? `
-          <div class="self-check-box" id="selfCheckBox">
+          <div class="self-check-box ${isPaperFirstDone ? "collapsed" : ""}" id="selfCheckBox">
             <div class="self-check-header">
               <span class="self-check-label">Paper-First</span>
-              <button type="button" class="self-check-toggle" id="toggleSelfCheckBtn">${state.hideSelfCheck ? "Show prompt" : "Hide"}</button>
+              <button type="button" class="self-check-toggle" id="toggleSelfCheckBtn" aria-pressed="${isPaperFirstDone}">${selfCheckBtnLabel}</button>
             </div>
-            ${state.hideSelfCheck ? "" : `<p class="self-check-body">${activeItem.selfCheck}</p>`}
+            ${isPaperFirstDone ? "" : `<p class="self-check-body">${activeItem.selfCheck}</p>`}
           </div>
         ` : ""}
         ${optionsHtml}
@@ -1365,7 +1386,8 @@
       const toggleScBtn = document.getElementById("toggleSelfCheckBtn");
       if (toggleScBtn) {
         toggleScBtn.addEventListener("click", () => {
-          state.hideSelfCheck = !state.hideSelfCheck;
+          state.paperFirstDone[stepKey] = !state.paperFirstDone[stepKey];
+          saveState();
           render();
         });
       }
@@ -1390,6 +1412,7 @@
             selectedId: optId,
             solved: prev.solved || chosen.isCorrect
           };
+          state.paperFirstDone[stepKey] = true;
           saveState();
           render();
         });
@@ -1437,6 +1460,7 @@
 
     document.getElementById("resetBtn").addEventListener("click", () => {
       state.answers = {};
+      state.paperFirstDone = {};
       state.probIdx = 0;
       state.tierIdx = 0;
       saveState();
