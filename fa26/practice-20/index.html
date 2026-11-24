@@ -165,61 +165,47 @@
       color: var(--primary);
     }
 
-    /* Problem Selector Strip */
-    .nav-strip-wrap {
+    /* Problem Selector Dropdown */
+    .prob-select-wrap {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 8px 12px;
-    }
-
-    .nav-strip {
+      padding: 8px 14px;
       display: flex;
+      align-items: center;
       justify-content: center;
-      flex-wrap: wrap;
-      gap: 6px;
-      padding-bottom: 2px;
+      gap: 10px;
     }
 
-    .nav-strip::-webkit-scrollbar {
-      display: none;
-    }
-
-    .prob-tab {
-      flex: 0 0 auto;
-      min-height: 40px;
-      padding: 5px 10px;
+    .prob-select {
+      width: auto;
+      min-width: 132px;
+      max-width: 220px;
+      min-height: 38px;
+      padding: 6px 34px 6px 13px;
       border-radius: 10px;
       border: 1.5px solid var(--border);
-      background: var(--surface);
+      background-color: var(--surface-alt);
       color: var(--text);
-      font-size: 0.84rem;
+      font-family: inherit;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: background 0.15s, border-color 0.15s, color 0.15s;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      transition: border-color 0.15s, background-color 0.15s;
     }
 
-    .prob-tab:focus-visible,
+    .prob-select:focus-visible,
     .tier-pill:focus-visible,
     .opt-btn:focus-visible,
     .nav-btn:focus-visible,
     .reset-btn:focus-visible {
       outline: 2.5px solid var(--primary);
       outline-offset: 2px;
-    }
-
-    .prob-tab.active {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #ffffff;
-    }
-
-    .prob-tab.done:not(.active) {
-      background: var(--ok-bg);
-      border-color: var(--ok-border);
-      color: var(--ok-text);
     }
 
 
@@ -567,15 +553,20 @@
 
     .reset-btn {
       background: var(--surface-alt);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
       border-radius: 999px;
-      color: var(--text-muted);
-      font-size: 0.75rem;
-      font-weight: 600;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1;
       cursor: pointer;
-      padding: 5px 9px;
-      min-height: 32px;
-      white-space: nowrap;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
     /* Clean Offline Math Fallback Styling */
@@ -608,14 +599,14 @@
           </button>
         </div>
         <div class="header-right">
-          <button type="button" class="reset-btn" id="resetBtn">Reset</button>
-          <div class="progress-pill" id="progressPill"><strong>0</strong> / 8 done</div>
+          <button type="button" class="reset-btn" id="resetBtn" aria-label="Reset progress" title="Reset progress">&#8634;</button>
         </div>
       </div>
     </header>
 
-    <nav class="nav-strip-wrap" aria-label="Worksheet Problems">
-      <div class="nav-strip" id="probNav"></div>
+    <nav class="prob-select-wrap" aria-label="Worksheet Problems">
+      <select class="prob-select" id="probSelect" aria-label="Select worksheet problem"></select>
+      <div class="progress-pill" id="progressPill"><strong>0</strong> / 8 done</div>
     </nav>
 
     <main class="main-content">
@@ -645,27 +636,27 @@
             options: [
               {
                 id: "A",
-                text: `${m("T_R = mg", "<i>T</i><sub>R</sub> = <i>mg</i>")}, because the string simply supports the mass.`,
-                isCorrect: false,
-                feedback: `If ${m("T_R = mg", "<i>T</i><sub>R</sub> = <i>mg</i>")}, the net force on the block would be zero, meaning zero acceleration. Re-check the problem statement: the block is accelerating upward.`
-              },
-              {
-                id: "B",
-                text: `${m("T_R > mg", "<i>T</i><sub>R</sub> &gt; <i>mg</i>")}, so the net force points upward in the direction of acceleration ${m("a", "<i>a</i>")}.`,
-                isCorrect: true,
-                feedback: `Right! Choosing upward as positive gives a positive net force (${m("T_R", "<i>T</i><sub>R</sub>")} minus weight) equal to ${m("ma", "<i>ma</i>")}. Write your Newton's 2nd Law equation on paper and isolate ${m("T_R", "<i>T</i><sub>R</sub>")}.`
-              },
-              {
-                id: "C",
                 text: `${m("T_R < mg", "<i>T</i><sub>R</sub> &lt; <i>mg</i>")}, because the pulley absorbs some of the tension.`,
                 isCorrect: false,
                 feedback: `The massive pulley does make ${m("T_R", "<i>T</i><sub>R</sub>")} smaller than ${m("T_L", "<i>T</i><sub>L</sub>")}, but ${m("T_R", "<i>T</i><sub>R</sub>")} must still beat ${m("mg", "<i>mg</i>")} for the hanging mass to accelerate upward rather than fall.`
               },
               {
-                id: "D",
+                id: "B",
+                text: `${m("T_R = mg", "<i>T</i><sub>R</sub> = <i>mg</i>")}, because the string simply supports the mass.`,
+                isCorrect: false,
+                feedback: `If ${m("T_R = mg", "<i>T</i><sub>R</sub> = <i>mg</i>")}, the net force on the block would be zero, meaning zero acceleration. Re-check the problem statement: the block is accelerating upward.`
+              },
+              {
+                id: "C",
                 text: `${m("T_R = T_L", "<i>T</i><sub>R</sub> = <i>T</i><sub>L</sub>")}, because both sides are part of the same string.`,
                 isCorrect: false,
                 feedback: `That only holds for a massless, frictionless pulley. Here the pulley has mass ${m("M", "<i>M</i>")}, so a net torque is required to spin it—meaning ${m("T_L \\neq T_R", "<i>T</i><sub>L</sub> &ne; <i>T</i><sub>R</sub>")}.`
+              },
+              {
+                id: "D",
+                text: `${m("T_R > mg", "<i>T</i><sub>R</sub> &gt; <i>mg</i>")}, so the net force points upward in the direction of acceleration ${m("a", "<i>a</i>")}.`,
+                isCorrect: true,
+                feedback: `Right! Choosing upward as positive gives a positive net force (${m("T_R", "<i>T</i><sub>R</sub>")} minus weight) equal to ${m("ma", "<i>ma</i>")}. Write your Newton's 2nd Law equation on paper and isolate ${m("T_R", "<i>T</i><sub>R</sub>")}.`
               }
             ]
           }
@@ -679,32 +670,32 @@
         tiers: [
           {
             <!-- Tier 1 · Torque Signs & Rotation Sense -->
-            question: `For counterclockwise pulley rotation as the right mass rises, how do ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")} torques combine in ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
+            question: `For CCW pulley rotation as the right mass rises, how do the torques exerted by ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")} combine in ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
             selfCheck: `Draw ${m("T_L", "<i>T</i><sub>L</sub>")} (left rim, down) and ${m("T_R", "<i>T</i><sub>R</sub>")} (right rim, down) on the pulley and check each rotation sense first.`,
             options: [
               {
                 id: "A",
-                text: `Both tensions produce torques in the same direction, so their magnitudes add.`,
-                isCorrect: false,
-                feedback: `Trace the string on both sides of the pulley: ${m("T_L", "<i>T</i><sub>L</sub>")} pulls downward on the left (counterclockwise), while ${m("T_R", "<i>T</i><sub>R</sub>")} pulls downward on the right (clockwise). They oppose each other.`
-              },
-              {
-                id: "B",
-                text: `They oppose each other, with ${m("T_L", "<i>T</i><sub>L</sub>")} producing the positive (driving) torque and ${m("T_R", "<i>T</i><sub>R</sub>")} opposing it.`,
-                isCorrect: true,
-                feedback: `Spot on! Defining counterclockwise as positive matches the upward acceleration of mass ${m("m", "<i>m</i>")}. Remember that each tension acts at radius ${m("R", "<i>R</i>")} tangent to the rim.`
-              },
-              {
-                id: "C",
-                text: `They oppose each other, with ${m("T_R", "<i>T</i><sub>R</sub>")} producing the larger torque because it holds the hanging mass.`,
-                isCorrect: false,
-                feedback: `If the torque from ${m("T_R", "<i>T</i><sub>R</sub>")} were larger, the pulley would accelerate clockwise and the hanging mass would fall. Since the mass rises, ${m("T_L", "<i>T</i><sub>L</sub>")} must win the tug-of-war.`
-              },
-              {
-                id: "D",
                 text: `Only ${m("T_L", "<i>T</i><sub>L</sub>")} exerts a torque; ${m("T_R", "<i>T</i><sub>R</sub>")} only acts on the hanging mass.`,
                 isCorrect: false,
                 feedback: `By Newton's 3rd Law, the right-hand string pulls upward on mass ${m("m", "<i>m</i>")} and downward on the right rim of the pulley with equal magnitude ${m("T_R", "<i>T</i><sub>R</sub>")}. Both tensions exert torques on the pulley.`
+              },
+              {
+                id: "B",
+                text: `They oppose each other, with ${m("T_R", "<i>T</i><sub>R</sub>")} producing the larger torque because it holds the hanging mass.`,
+                isCorrect: false,
+                feedback: `If the torque from ${m("T_R", "<i>T</i><sub>R</sub>")} were larger, the pulley would accelerate CW and the hanging mass would fall. Since the mass rises, ${m("T_L", "<i>T</i><sub>L</sub>")} must win the tug-of-war.`
+              },
+              {
+                id: "C",
+                text: `Both tensions produce torques in the same direction, so their magnitudes add.`,
+                isCorrect: false,
+                feedback: `Trace the string on both sides of the pulley: ${m("T_L", "<i>T</i><sub>L</sub>")} pulls downward on the left (CCW), while ${m("T_R", "<i>T</i><sub>R</sub>")} pulls downward on the right (CW). They oppose each other.`
+              },
+              {
+                id: "D",
+                text: `They oppose each other, with ${m("T_L", "<i>T</i><sub>L</sub>")} producing the positive (driving) torque and ${m("T_R", "<i>T</i><sub>R</sub>")} opposing it.`,
+                isCorrect: true,
+                feedback: `Spot on! Defining CCW as positive matches the upward acceleration of mass ${m("m", "<i>m</i>")}. Remember that each tension acts at radius ${m("R", "<i>R</i>")} tangent to the rim.`
               }
             ]
           },
@@ -720,15 +711,15 @@
               },
               {
                 id: "B",
-                text: `${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}`,
-                isCorrect: true,
-                feedback: `Correct! A solid uniform cylinder spinning about its central axis has ${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}. Combine your net torque and this ${m("I", "<i>I</i>")} on paper to finish #2.`
-              },
-              {
-                id: "C",
                 text: `${m("I = \\frac{2}{5}MR^2", "<i>I</i> = (2/5)<i>MR</i><sup>2</sup>")}`,
                 isCorrect: false,
                 feedback: `That's the rotational inertia of a solid sphere, not a cylinder. Check your moment-of-inertia table for a solid cylinder or disk about its central axis.`
+              },
+              {
+                id: "C",
+                text: `${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}`,
+                isCorrect: true,
+                feedback: `Correct! A solid uniform cylinder spinning about its central axis has ${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}. Combine your net torque and this ${m("I", "<i>I</i>")} on paper to finish #2.`
               }
             ]
           }
@@ -741,27 +732,51 @@
         cue: "No-slip constraint <i>a</i> = <i>R&alpha;</i> in the pulley equation",
         tiers: [
           {
-            <!-- Tier 1 · Eliminating α & Checking R -->
-            question: `Using ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} in #2, what substitution do you make and how does ${m("R", "<i>R</i>")} behave?`,
+            <!-- Tier 1 · Substitution for α -->
+            question: `Using ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} in #2, which substitution expresses ${m("\\alpha", "&alpha;")} in terms of ${m("a", "<i>a</i>")} and ${m("R", "<i>R</i>")}?`,
+            options: [
+              {
+                id: "A",
+                text: `${m("\\alpha = \\frac{a}{R}", "&alpha; = <i>a</i> / <i>R</i>")}`,
+                isCorrect: true,
+                feedback: `Right! Dividing ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} by ${m("R", "<i>R</i>")} gives ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")}. Move to Tier 2 to see what happens to the factors of ${m("R", "<i>R</i>")}.`
+              },
+              {
+                id: "B",
+                text: `${m("\\alpha = \\frac{R}{a}", "&alpha; = <i>R</i> / <i>a</i>")}`,
+                isCorrect: false,
+                feedback: `That has units of s<sup>2</sup>/m rather than rad/s (1/s). Solve ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} for ${m("\\alpha", "&alpha;")}.`
+              },
+              {
+                id: "C",
+                text: `${m("\\alpha = aR", "&alpha; = <i>aR</i>")}`,
+                isCorrect: false,
+                feedback: `Check the units! ${m("a", "<i>a</i>")} is in m/s<sup>2</sup> and ${m("R", "<i>R</i>")} is in m, so ${m("aR", "<i>aR</i>")} has units of m<sup>2</sup>/s<sup>2</sup>, not rad/s<sup>2</sup>.`
+              }
+            ]
+          },
+          {
+            <!-- Tier 2 · Behavior of Factors of R -->
+            question: `After substituting ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")} into #2, what happens to the factors of ${m("R", "<i>R</i>")}?`,
             selfCheck: `Substitute ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")} into your #2 equation on paper and count powers of ${m("R", "<i>R</i>")} first.`,
             options: [
               {
                 id: "A",
-                text: `Substitute ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")}; then every factor of ${m("R", "<i>R</i>")} cancels completely from the equation.`,
-                isCorrect: true,
-                feedback: `Exactly! One factor of ${m("R", "<i>R</i>")} cancels inside ${m("I\\alpha", "<i>I&alpha;</i>")}, leaving a single ${m("R", "<i>R</i>")} on both sides of the equation—which divides out cleanly. Carry that simplified equation into #4.`
+                text: `A factor of ${m("R^2", "<i>R</i><sup>2</sup>")} remains in the equation.`,
+                isCorrect: false,
+                feedback: `Check the left-hand side of #2: each torque has lever arm ${m("R", "<i>R</i>")}. When both sides have the right powers of ${m("R", "<i>R</i>")}, see what divides out.`
               },
               {
                 id: "B",
-                text: `Substitute ${m("\\alpha = aR", "&alpha; = <i>aR</i>")}; then ${m("R", "<i>R</i>")} remains in the equation as ${m("R^2", "<i>R</i><sup>2</sup>")}.`,
+                text: `One factor of ${m("R", "<i>R</i>")} survives so the final acceleration depends on ${m("R = 0.1\\text{ m}", "<i>R</i> = 0.1 m")}.`,
                 isCorrect: false,
-                feedback: `Check the units! ${m("a", "<i>a</i>")} is in m/s<sup>2</sup> and ${m("R", "<i>R</i>")} is in m, so ${m("aR", "<i>aR</i>")} has units of m<sup>2</sup>/s<sup>2</sup>, not rad/s<sup>2</sup>. Solve ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} carefully for ${m("\\alpha", "&alpha;")}.`
+                feedback: `Look closely at the left-hand side of #2: did you include the lever arm ${m("R", "<i>R</i>")} in the torques from ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")}? When both sides have the right powers of ${m("R", "<i>R</i>")}, see what divides out.`
               },
               {
                 id: "C",
-                text: `Substitute ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")}; one factor of ${m("R", "<i>R</i>")} survives so the final acceleration depends on ${m("R = 0.1\\text{ m}", "<i>R</i> = 0.1 m")}.`,
-                isCorrect: false,
-                feedback: `Look closely at the left-hand side of #2: did you include the lever arm ${m("R", "<i>R</i>")} in the torques from ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")}? When both sides have the right powers of ${m("R", "<i>R</i>")}, see what divides out.`
+                text: `Every factor of ${m("R", "<i>R</i>")} cancels completely from the equation.`,
+                isCorrect: true,
+                feedback: `Exactly! One factor of ${m("R", "<i>R</i>")} cancels inside ${m("I\\alpha", "<i>I&alpha;</i>")}, leaving a single ${m("R", "<i>R</i>")} on both sides of the equation—which divides out cleanly. Carry that simplified equation into #4.`
               }
             ]
           }
@@ -786,15 +801,15 @@
               },
               {
                 id: "B",
-                text: `The hanging mass ${m("m", "<i>m</i>")} plus half the pulley's mass (from ${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}).`,
-                isCorrect: true,
-                feedback: `Nice! That ${m("\\frac{1}{2}M", "&frac12;<i>M</i>")} term acts as the pulley's "effective rotational mass" opposing the acceleration. Notice how your symbolic answer has the clean form (net driving force) / (total effective inertia).`
-              },
-              {
-                id: "C",
                 text: `The sum ${m("m + M", "<i>m</i> + <i>M</i>")}, because all of the pulley's mass accelerates at ${m("a", "<i>a</i>")}.`,
                 isCorrect: false,
                 feedback: `Only the very outer rim of the pulley accelerates at ${m("a", "<i>a</i>")}; mass closer to the axle moves more slowly. Check the coefficient in ${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}—it shouldn't vanish during algebra.`
+              },
+              {
+                id: "C",
+                text: `The hanging mass ${m("m", "<i>m</i>")} plus half the pulley's mass (from ${m("I = \\frac{1}{2}MR^2", "<i>I</i> = &frac12;<i>MR</i><sup>2</sup>")}).`,
+                isCorrect: true,
+                feedback: `Nice! That ${m("\\frac{1}{2}M", "&frac12;<i>M</i>")} term acts as the pulley's "effective rotational mass" opposing the acceleration. Notice how your symbolic answer has the clean form (net driving force) / (total effective inertia).`
               },
               {
                 id: "D",
@@ -816,15 +831,15 @@
               },
               {
                 id: "B",
-                text: `${m("a = g", "<i>a</i> = <i>g</i>")}, because gravity takes over completely.`,
-                isCorrect: false,
-                feedback: `If the left pull equals ${m("mg", "<i>mg</i>")}, the system is in static equilibrium—neither side wins. Check the signs in your numerator if your formula doesn't vanish at ${m("T_L = mg", "<i>T</i><sub>L</sub> = <i>mg</i>")}.`
-              },
-              {
-                id: "C",
                 text: `${m("a < 0", "<i>a</i> &lt; 0")}, because the pulley's weight pulls the right side down.`,
                 isCorrect: false,
                 feedback: `The pulley's weight acts through its central axle, so it produces zero torque about the axle. When ${m("T_L = mg", "<i>T</i><sub>L</sub> = <i>mg</i>")}, the net driving force is zero.`
+              },
+              {
+                id: "C",
+                text: `${m("a = g", "<i>a</i> = <i>g</i>")}, because gravity takes over completely.`,
+                isCorrect: false,
+                feedback: `If the left pull equals ${m("mg", "<i>mg</i>")}, the system is in static equilibrium—neither side wins. Check the signs in your numerator if your formula doesn't vanish at ${m("T_L = mg", "<i>T</i><sub>L</sub> = <i>mg</i>")}.`
               }
             ]
           }
@@ -833,25 +848,25 @@
           title: "Optional: Extension / Twist",
           question: `If the ${m("30\\text{ N}", "30 N")} pull ${m("T_L", "<i>T</i><sub>L</sub>")} is replaced by a ${m("30\\text{ N}", "30 N")} hanging weight, how does ${m("a", "<i>a</i>")} of the ${m("2\\text{ kg}", "2 kg")} mass change?`,
           options: [
-            {
+              {
               id: "A",
-              text: `It stays exactly the same, because the downward force on the left side is still ${m("30\\text{ N}", "30 N")}.`,
+              text: `It increases, because gravity pulls more effectively than a hand.`,
               isCorrect: false,
-              feedback: `Careful! A hanging ${m("30\\text{ N}", "30 N")} block accelerates downward, so the tension ${m("T_L", "<i>T</i><sub>L</sub>")} in the string above it must be LESS than its weight (${m("30\\text{ N}", "30 N")}).`
+              feedback: `A ${m("30\\text{ N}", "30 N")} force is a ${m("30\\text{ N}", "30 N")} force, but attaching a physical mass to create that force introduces additional inertia that slows the entire system down.`
             },
-            {
+              {
               id: "B",
               text: `It decreases, because the new hanging block adds extra inertia to the system and lowers ${m("T_L", "<i>T</i><sub>L</sub>")} below ${m("30\\text{ N}", "30 N")}.`,
               isCorrect: true,
               feedback: `Brilliant insight! The net external driving force is the same, but now you also have to accelerate the mass of that ${m("30\\text{ N}", "30 N")} block downward—adding another mass term to the denominator.`
             },
-            {
+              {
               id: "C",
-              text: `It increases, because gravity pulls more effectively than a hand.`,
+              text: `It stays exactly the same, because the downward force on the left side is still ${m("30\\text{ N}", "30 N")}.`,
               isCorrect: false,
-              feedback: `A ${m("30\\text{ N}", "30 N")} force is a ${m("30\\text{ N}", "30 N")} force, but attaching a physical mass to create that force introduces additional inertia that slows the entire system down.`
+              feedback: `Careful! A hanging ${m("30\\text{ N}", "30 N")} block accelerates downward, so the tension ${m("T_L", "<i>T</i><sub>L</sub>")} in the string above it must be LESS than its weight (${m("30\\text{ N}", "30 N")}).`
             }
-          ]
+            ]
         }
       },
       {
@@ -866,21 +881,21 @@
             options: [
               {
                 id: "A",
-                text: `${m("\\vec{L} = \\vec{r} \\times (m\\vec{v})", "<span class='vec'>L</span> = <span class='vec'>r</span> &times; (<i>m</i><span class='vec'>v</span>)")}`,
-                isCorrect: true,
-                feedback: `Correct! Position ${m("\\vec{r}", "<span class='vec'>r</span>")} comes first, linear momentum ${m("\\vec{p} = m\\vec{v}", "<span class='vec'>p</span> = <i>m</i><span class='vec'>v</span>")} comes second, and don't forget to include the ${m("0.5\\text{ kg}", "0.5 kg")} mass.`
-              },
-              {
-                id: "B",
                 text: `${m("\\vec{L} = (m\\vec{v}) \\times \\vec{r}", "<span class='vec'>L</span> = (<i>m</i><span class='vec'>v</span>) &times; <span class='vec'>r</span>")}`,
                 isCorrect: false,
                 feedback: `Cross products are anti-commutative: swapping the order flips the sign of every component! Always put the position vector ${m("\\vec{r}", "<span class='vec'>r</span>")} first.`
               },
               {
-                id: "C",
+                id: "B",
                 text: `${m("\\vec{L} = \\vec{r} \\times \\vec{v}", "<span class='vec'>L</span> = <span class='vec'>r</span> &times; <span class='vec'>v</span>")}`,
                 isCorrect: false,
                 feedback: `You have the right cross-product order, but you left out the particle's mass ${m("m = 0.5\\text{ kg}", "<i>m</i> = 0.5 kg")}. Angular momentum depends on momentum ${m("m\\vec{v}", "<i>m</i><span class='vec'>v</span>")}, not velocity alone.`
+              },
+              {
+                id: "C",
+                text: `${m("\\vec{L} = \\vec{r} \\times (m\\vec{v})", "<span class='vec'>L</span> = <span class='vec'>r</span> &times; (<i>m</i><span class='vec'>v</span>)")}`,
+                isCorrect: true,
+                feedback: `Correct! Position ${m("\\vec{r}", "<span class='vec'>r</span>")} comes first, linear momentum ${m("\\vec{p} = m\\vec{v}", "<span class='vec'>p</span> = <i>m</i><span class='vec'>v</span>")} comes second, and don't forget to include the ${m("0.5\\text{ kg}", "0.5 kg")} mass.`
               },
               {
                 id: "D",
@@ -896,9 +911,9 @@
             options: [
               {
                 id: "A",
-                text: `${m("\\hat{\\imath} \\times \\hat{\\jmath} = +\\hat{k}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>k&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath} = +\\hat{\\imath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>i&#x0302;</b>")}`,
+                text: `${m("\\hat{\\imath} \\times \\hat{\\jmath} = -\\hat{k}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b> = &minus;<b>k&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath} = +\\hat{\\imath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>i&#x0302;</b>")}`,
                 isCorrect: false,
-                feedback: `Check the cyclic order (${m("\\hat{\\imath} \\to \\hat{\\jmath} \\to \\hat{k} \\to \\hat{\\imath}", "<b>i&#x0302;</b> &rarr; <b>j&#x0302;</b> &rarr; <b>k&#x0302;</b> &rarr; <b>i&#x0302;</b>")}). Going from ${m("\\hat{k}", "<b>k&#x0302;</b>")} to ${m("\\hat{\\jmath}", "<b>j&#x0302;</b>")} runs backward around the cycle!`
+                feedback: `Both signs are reversed! Point your right-hand fingers along ${m("+\\hat{\\imath}", "+<b>i&#x0302;</b>")} and curl toward ${m("+\\hat{\\jmath}", "+<b>j&#x0302;</b>")}—your thumb points along ${m("+\\hat{k}", "+<b>k&#x0302;</b>")}.`
               },
               {
                 id: "B",
@@ -908,9 +923,9 @@
               },
               {
                 id: "C",
-                text: `${m("\\hat{\\imath} \\times \\hat{\\jmath} = -\\hat{k}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b> = &minus;<b>k&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath} = +\\hat{\\imath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>i&#x0302;</b>")}`,
+                text: `${m("\\hat{\\imath} \\times \\hat{\\jmath} = +\\hat{k}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>k&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath} = +\\hat{\\imath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b> = +<b>i&#x0302;</b>")}`,
                 isCorrect: false,
-                feedback: `Both signs are reversed! Point your right-hand fingers along ${m("+\\hat{\\imath}", "+<b>i&#x0302;</b>")} and curl toward ${m("+\\hat{\\jmath}", "+<b>j&#x0302;</b>")}—your thumb points along ${m("+\\hat{k}", "+<b>k&#x0302;</b>")}.`
+                feedback: `Check the cyclic order (${m("\\hat{\\imath} \\to \\hat{\\jmath} \\to \\hat{k} \\to \\hat{\\imath}", "<b>i&#x0302;</b> &rarr; <b>j&#x0302;</b> &rarr; <b>k&#x0302;</b> &rarr; <b>i&#x0302;</b>")}). Going from ${m("\\hat{k}", "<b>k&#x0302;</b>")} to ${m("\\hat{\\jmath}", "<b>j&#x0302;</b>")} runs backward around the cycle!`
               }
             ]
           }
@@ -919,25 +934,25 @@
           title: "Optional: Extension / Twist",
           question: `How do you verify algebraically that ${m("\\vec{L}", "<span class='vec'>L</span>")} is perpendicular to both ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")}?`,
           options: [
-            {
+              {
               id: "A",
               text: `Compute the dot products ${m("\\vec{L} \\cdot \\vec{r}", "<span class='vec'>L</span> &middot; <span class='vec'>r</span>")} and ${m("\\vec{L} \\cdot \\vec{v}", "<span class='vec'>L</span> &middot; <span class='vec'>v</span>")} and verify that both equal zero.`,
               isCorrect: true,
               feedback: `Exactly! Two nonzero vectors are perpendicular if and only if their dot product vanishes. Checking ${m("\\vec{L} \\cdot \\vec{r} = 0", "<span class='vec'>L</span> &middot; <span class='vec'>r</span> = 0")} and ${m("\\vec{L} \\cdot \\vec{v} = 0", "<span class='vec'>L</span> &middot; <span class='vec'>v</span> = 0")} on paper is also a great error-catching check on your cross-product signs!`
             },
-            {
+              {
               id: "B",
               text: `Verify that ${m("\\vec{L}", "<span class='vec'>L</span>")} has no ${m("\\hat{\\jmath}", "<b>j&#x0302;</b>")} component, since ${m("\\vec{v}", "<span class='vec'>v</span>")} lies entirely along ${m("\\hat{\\jmath}", "<b>j&#x0302;</b>")}.`,
               isCorrect: false,
               feedback: `Having no ${m("\\hat{\\jmath}", "<b>j&#x0302;</b>")} component only confirms ${m("\\vec{L} \\perp \\vec{v}", "<span class='vec'>L</span> &perp; <span class='vec'>v</span>")}—it does NOT check whether ${m("\\vec{L}", "<span class='vec'>L</span>")} is perpendicular to ${m("\\vec{r} = 4\\hat{\\imath} + 6\\hat{k}", "<span class='vec'>r</span> = 4<b>i&#x0302;</b> + 6<b>k&#x0302;</b>")} (whose ${m("\\hat{\\imath}", "<b>i&#x0302;</b>")} and ${m("\\hat{k}", "<b>k&#x0302;</b>")} terms must cancel in ${m("\\vec{L} \\cdot \\vec{r}", "<span class='vec'>L</span> &middot; <span class='vec'>r</span>")}).`
             },
-            {
+              {
               id: "C",
               text: `Check that the magnitudes satisfy ${m("L = mrv", "<i>L</i> = <i>mrv</i>")}.`,
               isCorrect: false,
               feedback: `Here ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")} happen to be perpendicular so ${m("L = mrv", "<i>L</i> = <i>mrv</i>")}, but checking scalar magnitudes alone doesn't verify the direction of ${m("\\vec{L}", "<span class='vec'>L</span>")} relative to ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")}.`
             }
-          ]
+            ]
         }
       },
       {
@@ -952,21 +967,21 @@
             options: [
               {
                 id: "A",
-                text: `Model it as a thin hollow spherical shell (${m("I = \\frac{2}{3}MR^2", "<i>I</i> = (2/3)<i>MR</i><sup>2</sup>")}), and look up or estimate a standard basketball's mass ${m("M", "<i>M</i>")} and radius ${m("R", "<i>R</i>")}.`,
-                isCorrect: true,
-                feedback: `Exactly! A basketball's mass sits almost entirely in its rubber/leather outer shell, making ${m("I = \\frac{2}{3}MR^2", "<i>I</i> = (2/3)<i>MR</i><sup>2</sup>")} the right model. Jot down reasonable values for a standard basketball's ${m("M", "<i>M</i>")} (in kg) and ${m("R", "<i>R</i>")} (in m) on your sheet.`
-              },
-              {
-                id: "B",
                 text: `Model it as a solid sphere (${m("I = \\frac{2}{5}MR^2", "<i>I</i> = (2/5)<i>MR</i><sup>2</sup>")}), and estimate ${m("M", "<i>M</i>")} and ${m("R", "<i>R</i>")}.`,
                 isCorrect: false,
                 feedback: `A basketball is filled with air, not solid rubber! Because its mass is concentrated near the outer surface rather than filled uniformly inside, its rotational inertia is larger than a solid sphere of the same mass and radius.`
               },
               {
-                id: "C",
+                id: "B",
                 text: `Model it as a point particle (${m("L = mvr", "<i>L</i> = <i>mvr</i>")}) so you don't need a moment-of-inertia formula.`,
                 isCorrect: false,
                 feedback: `A basketball spinning about its own center is an extended rigid body whose different parts move at different speeds depending on their distance from the spin axis. You need ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}.`
+              },
+              {
+                id: "C",
+                text: `Model it as a thin hollow spherical shell (${m("I = \\frac{2}{3}MR^2", "<i>I</i> = (2/3)<i>MR</i><sup>2</sup>")}), and look up or estimate a standard basketball's mass ${m("M", "<i>M</i>")} and radius ${m("R", "<i>R</i>")}.`,
+                isCorrect: true,
+                feedback: `Exactly! A basketball's mass sits almost entirely in its rubber/leather outer shell, making ${m("I = \\frac{2}{3}MR^2", "<i>I</i> = (2/3)<i>MR</i><sup>2</sup>")} the right model. Jot down reasonable values for a standard basketball's ${m("M", "<i>M</i>")} (in kg) and ${m("R", "<i>R</i>")} (in m) on your sheet.`
               }
             ]
           },
@@ -976,15 +991,15 @@
             options: [
               {
                 id: "A",
-                text: `Use ${m("\\omega = 8", "&omega; = 8")} directly, since seconds are already in SI units.`,
-                isCorrect: false,
-                feedback: `Watch out! Standard rotational formulas like ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")} require angular speed in radians per second (rad/s), not revolutions per second.`
-              },
-              {
-                id: "B",
                 text: `Multiply by ${m("2\\pi", "2&pi;")} radians per revolution to get ${m("\\omega", "&omega;")} in rad/s.`,
                 isCorrect: true,
                 feedback: `Right! Each full revolution sweeps out ${m("2\\pi\\text{ rad}", "2&pi; rad")}, so ${m("\\omega = 2\\pi f", "&omega; = 2&pi;<i>f</i>")}. Now combine your converted ${m("\\omega", "&omega;")} with ${m("I = \\frac{2}{3}MR^2", "<i>I</i> = (2/3)<i>MR</i><sup>2</sup>")} on paper.`
+              },
+              {
+                id: "B",
+                text: `Multiply by ${m("360^\\circ", "360&deg;")} per revolution to get degrees per second.`,
+                isCorrect: false,
+                feedback: `Degrees aren't compatible with SI units of angular momentum (kg&middot;m<sup>2</sup>/s). You need radians per second.`
               },
               {
                 id: "C",
@@ -994,9 +1009,9 @@
               },
               {
                 id: "D",
-                text: `Multiply by ${m("360^\\circ", "360&deg;")} per revolution to get degrees per second.`,
+                text: `Use ${m("\\omega = 8", "&omega; = 8")} directly, since seconds are already in SI units.`,
                 isCorrect: false,
-                feedback: `Degrees aren't compatible with SI units of angular momentum (kg&middot;m<sup>2</sup>/s). You need radians per second.`
+                feedback: `Watch out! Standard rotational formulas like ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")} require angular speed in radians per second (rad/s), not revolutions per second.`
               }
             ]
           }
@@ -1005,25 +1020,25 @@
           title: "Optional: Extension / Twist",
           question: `Under a steady frictional torque ${m("\\tau_{\\text{fric}}", "&tau;<sub>fric</sub>")} bringing the ball to rest, which relation gives stopping time ${m("\\Delta t", "&Delta;<i>t</i>")} from ${m("L", "<i>L</i>")}?`,
           options: [
-            {
+              {
               id: "A",
-              text: `${m("\\Delta t = \\frac{L}{\\tau_{\\text{fric}}}", "&Delta;<i>t</i> = <i>L</i> / &tau;<sub>fric</sub>")}, since a constant net torque changes angular momentum at rate ${m("\\tau_{\\text{fric}} = |\\Delta L| / \\Delta t", "&tau;<sub>fric</sub> = |&Delta;<i>L</i>| / &Delta;<i>t</i>")}.`,
-              isCorrect: true,
-              feedback: `Spot on! Just like linear impulse (${m("F\\Delta t = \\Delta p", "<i>F</i>&Delta;<i>t</i> = &Delta;<i>p</i>")}), rotational impulse gives ${m("\\tau_{\\text{fric}}\\Delta t = \\Delta L", "&tau;<sub>fric</sub>&Delta;<i>t</i> = &Delta;<i>L</i>")}. Pick a realistic small torque (e.g., ${m("0.01\\text{ N}\\cdot\\text{m}", "0.01 N&middot;m")}) on paper to see how many seconds it takes to stop!`
-            },
-            {
-              id: "B",
               text: `${m("\\Delta t = \\frac{\\omega}{\\tau_{\\text{fric}}}", "&Delta;<i>t</i> = &omega; / &tau;<sub>fric</sub>")}, because torque divides angular speed directly without needing ${m("I", "<i>I</i>")}.`,
               isCorrect: false,
               feedback: `Check the units and Newton's 2nd Law for rotation: ${m("\\tau = I\\alpha = I(\\omega / \\Delta t)", "&tau; = <i>I&alpha;</i> = <i>I</i>(&omega; / &Delta;<i>t</i>)")}. You need the rotational inertia ${m("I", "<i>I</i>")} included—which is already packaged inside ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}!`
             },
-            {
-              id: "C",
+              {
+              id: "B",
               text: `${m("\\Delta t = L \\cdot \\tau_{\\text{fric}}", "&Delta;<i>t</i> = <i>L</i> &middot; &tau;<sub>fric</sub>")}, so a larger frictional torque makes the ball spin longer.`,
               isCorrect: false,
               feedback: `Stronger friction should stop the ball FASTER (smaller ${m("\\Delta t", "&Delta;<i>t</i>")}), so ${m("\\tau_{\\text{fric}}", "&tau;<sub>fric</sub>")} belongs in the denominator, not the numerator.`
+            },
+              {
+              id: "C",
+              text: `${m("\\Delta t = \\frac{L}{\\tau_{\\text{fric}}}", "&Delta;<i>t</i> = <i>L</i> / &tau;<sub>fric</sub>")}, since a constant net torque changes angular momentum at rate ${m("\\tau_{\\text{fric}} = |\\Delta L| / \\Delta t", "&tau;<sub>fric</sub> = |&Delta;<i>L</i>| / &Delta;<i>t</i>")}.`,
+              isCorrect: true,
+              feedback: `Spot on! Just like linear impulse (${m("F\\Delta t = \\Delta p", "<i>F</i>&Delta;<i>t</i> = &Delta;<i>p</i>")}), rotational impulse gives ${m("\\tau_{\\text{fric}}\\Delta t = \\Delta L", "&tau;<sub>fric</sub>&Delta;<i>t</i> = &Delta;<i>L</i>")}. Pick a realistic small torque (e.g., ${m("0.01\\text{ N}\\cdot\\text{m}", "0.01 N&middot;m")}) on paper to see how many seconds it takes to stop!`
             }
-          ]
+            ]
         }
       },
       {
@@ -1051,15 +1066,15 @@
               },
               {
                 id: "C",
-                text: `Forward motion eliminates any gravitational torque when the bike leans slightly.`,
-                isCorrect: false,
-                feedback: `As soon as the center of mass shifts to one side of the tire contact line, gravity still creates a nonzero torque. The difference is how the wheel's existing angular momentum responds to that torque.`
-              },
-              {
-                id: "D",
                 text: `The wheels' rotational inertia ${m("I", "<i>I</i>")} increases as the bike speeds up.`,
                 isCorrect: false,
                 feedback: `Rotational inertia ${m("I", "<i>I</i>")} depends only on the mass distribution of the wheels, not their speed. It is the angular momentum ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")} that grows with speed.`
+              },
+              {
+                id: "D",
+                text: `Forward motion eliminates any gravitational torque when the bike leans slightly.`,
+                isCorrect: false,
+                feedback: `As soon as the center of mass shifts to one side of the tire contact line, gravity still creates a nonzero torque. The difference is how the wheel's existing angular momentum responds to that torque.`
               }
             ]
           }
@@ -1077,21 +1092,21 @@
             options: [
               {
                 id: "A",
-                text: `Rotational kinetic energy ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} stays constant, so the ratio ${m("K_f / K_i", "<i>K</i><sub>f</sub> / <i>K</i><sub>i</sub>")} is simply 1.`,
-                isCorrect: false,
-                feedback: `Careful! Internal gravitational forces do work as the star pulls its mass inward, so rotational kinetic energy is NOT conserved here. Ask instead which quantity is conserved when net external torque is zero.`
-              },
-              {
-                id: "B",
                 text: `Angular velocity ${m("\\omega", "&omega;")} stays constant, so ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} drops in direct proportion to ${m("I", "<i>I</i>")}.`,
                 isCorrect: false,
                 feedback: `Think of a figure skater pulling their arms in: when rotational inertia ${m("I", "<i>I</i>")} decreases with no external torque, the spin rate ${m("\\omega", "&omega;")} cannot stay constant—it speeds up dramatically.`
               },
               {
-                id: "C",
+                id: "B",
                 text: `Angular momentum ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")} is conserved, so when ${m("I", "<i>I</i>")} drops to ${m("\\frac{2}{5}", "2/5")} of its initial value, ${m("\\omega", "&omega;")} increases by the inverse factor.`,
                 isCorrect: true,
                 feedback: `Exactly! Zero external torque means ${m("I_i \\omega_i = I_f \\omega_f", "<i>I</i><sub>i</sub>&omega;<sub>i</sub> = <i>I</i><sub>f</sub>&omega;<sub>f</sub>")}. Set up that relation on paper before heading to Tier 2.`
+              },
+              {
+                id: "C",
+                text: `Rotational kinetic energy ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} stays constant, so the ratio ${m("K_f / K_i", "<i>K</i><sub>f</sub> / <i>K</i><sub>i</sub>")} is simply 1.`,
+                isCorrect: false,
+                feedback: `Careful! Internal gravitational forces do work as the star pulls its mass inward, so rotational kinetic energy is NOT conserved here. Ask instead which quantity is conserved when net external torque is zero.`
               }
             ]
           },
@@ -1101,15 +1116,15 @@
             options: [
               {
                 id: "A",
-                text: `It increases, because ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} is inversely proportional to ${m("I", "<i>I</i>")} when ${m("L", "<i>L</i>")} is fixed (the ${m("\\omega^2", "&omega;<sup>2</sup>")} increase beats the linear drop in ${m("I", "<i>I</i>")}).`,
-                isCorrect: true,
-                feedback: `Spot on! Using either ${m("K = L^2 / (2I)", "<i>K</i> = <i>L</i><sup>2</sup> / (2<i>I</i>)")} or substituting your new ${m("\\omega_f", "&omega;<sub>f</sub>")} into ${m("\\frac{1}{2}I_f\\omega_f^2", "&frac12;<i>I</i><sub>f</sub>&omega;<sub>f</sub><sup>2</sup>")}, compute the exact ratio ${m("K_f / K_i", "<i>K</i><sub>f</sub> / <i>K</i><sub>i</sub>")} on your worksheet—it should be greater than 1.`
-              },
-              {
-                id: "B",
                 text: `It decreases, because ${m("I", "<i>I</i>")} is smaller and ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} is proportional to ${m("I", "<i>I</i>")}.`,
                 isCorrect: false,
                 feedback: `That would only be true if ${m("\\omega", "&omega;")} were held fixed. Because ${m("\\omega", "&omega;")} is squared in ${m("\\frac{1}{2}I\\omega^2", "&frac12;<i>I&omega;</i><sup>2</sup>")}, the jump in ${m("\\omega^2", "&omega;<sup>2</sup>")} more than compensates for the drop in ${m("I", "<i>I</i>")}.`
+              },
+              {
+                id: "B",
+                text: `It increases, because ${m("K_{\\text{rot}}", "<i>K</i><sub>rot</sub>")} is inversely proportional to ${m("I", "<i>I</i>")} when ${m("L", "<i>L</i>")} is fixed (the ${m("\\omega^2", "&omega;<sup>2</sup>")} increase beats the linear drop in ${m("I", "<i>I</i>")}).`,
+                isCorrect: true,
+                feedback: `Spot on! Using either ${m("K = L^2 / (2I)", "<i>K</i> = <i>L</i><sup>2</sup> / (2<i>I</i>)")} or substituting your new ${m("\\omega_f", "&omega;<sub>f</sub>")} into ${m("\\frac{1}{2}I_f\\omega_f^2", "&frac12;<i>I</i><sub>f</sub>&omega;<sub>f</sub><sup>2</sup>")}, compute the exact ratio ${m("K_f / K_i", "<i>K</i><sub>f</sub> / <i>K</i><sub>i</sub>")} on your worksheet—it should be greater than 1.`
               },
               {
                 id: "C",
@@ -1124,30 +1139,30 @@
           title: "Optional: Extension / Twist",
           question: `With zero external torque on the collapsing star, where does the extra rotational kinetic energy come from?`,
           options: [
-            {
+              {
               id: "A",
               text: `Internal gravitational forces pull the star's mass inward, converting gravitational potential energy into rotational kinetic energy.`,
               isCorrect: true,
               feedback: `Exactly right! Internal forces can't change the system's total angular momentum (their internal torques cancel in pairs), but they CAN do net positive work—transforming gravitational potential energy into faster rotation.`
             },
-            {
+              {
               id: "B",
-              text: `Energy is not conserved whenever angular momentum is conserved.`,
-              isCorrect: false,
-              feedback: `Total energy is still conserved! Mechanical energy just shifts from one form (potential energy) into another (rotational kinetic energy).`
-            },
-            {
-              id: "C",
               text: `The surrounding vacuum exerts an external torque that adds energy to the star.`,
               isCorrect: false,
               feedback: `A vacuum exerts no external torque—and if an external torque were acting, angular momentum ${m("L", "<i>L</i>")} wouldn't have been conserved in the first place.`
+            },
+              {
+              id: "C",
+              text: `Energy is not conserved whenever angular momentum is conserved.`,
+              isCorrect: false,
+              feedback: `Total energy is still conserved! Mechanical energy just shifts from one form (potential energy) into another (rotational kinetic energy).`
             }
-          ]
+            ]
         }
       }
     ];
 
-    const STORAGE_KEY = "fa26_phys211_practice20_companion_v7";
+    const STORAGE_KEY = "fa26_phys211_practice20_companion_v8";
 
     const state = {
       probIdx: 0,
@@ -1239,25 +1254,21 @@
     };
 
     function renderNav() {
-      const nav = document.getElementById("probNav");
-      nav.innerHTML = "";
+      const sel = document.getElementById("probSelect");
+      sel.innerHTML = "";
       let solvedCount = 0;
 
       WORKSHEET_DATA.forEach((prob, idx) => {
         const done = isProblemSolved(prob);
         if (done) solvedCount++;
 
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "prob-tab" + (idx === state.probIdx ? " active" : "") + (done ? " done" : "");
-        btn.innerHTML = `<span>${prob.shortLabel}</span>`;
-        btn.addEventListener("click", () => {
-          state.probIdx = idx;
-          state.tierIdx = 0;
-          render();
-          btn.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-        });
-        nav.appendChild(btn);
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `${done ? "✓ " : ""}${prob.paperRef}`;
+        if (idx === state.probIdx) {
+          opt.selected = true;
+        }
+        sel.appendChild(opt);
       });
 
       const pill = document.getElementById("progressPill");
@@ -1452,6 +1463,12 @@
       renderNav();
       renderCard();
     }
+
+    document.getElementById("probSelect").addEventListener("change", (e) => {
+      state.probIdx = Number(e.target.value);
+      state.tierIdx = 0;
+      render();
+    });
 
     document.getElementById("themeToggleBtn").addEventListener("click", () => {
       applyTheme(state.theme === "dark" ? "light" : "dark");
