@@ -8,6 +8,28 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous" onload="window.__katexReady && window.__katexReady()"></script>
   <style>
     :root {
+      --bg: #0c111a;
+      --surface: #141c2b;
+      --surface-alt: #1b2538;
+      --text: #edf2f9;
+      --text-muted: #9fb0c7;
+      --border: #28364e;
+      --primary: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.16);
+      --primary-dark: #2563eb;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.16);
+      --ok-bg: rgba(34, 197, 94, 0.14);
+      --ok-border: #22c55e;
+      --ok-text: #86efac;
+      --warn-bg: rgba(251, 146, 60, 0.14);
+      --warn-border: #fb923c;
+      --warn-text: #fdba74;
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    [data-theme="light"] {
       --bg: #f6f8fb;
       --surface: #ffffff;
       --surface-alt: #f0f4fa;
@@ -25,7 +47,6 @@
       --warn-bg: #fff7ed;
       --warn-border: #ea580c;
       --warn-text: #7c2d12;
-      --radius: 14px;
       --shadow: 0 2px 10px rgba(20, 29, 43, 0.06);
     }
 
@@ -67,10 +88,48 @@
     }
 
     .header-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-left {
+      min-width: 0;
+    }
+
+    .header-center {
+      display: flex;
+      justify-content: center;
+    }
+
+    .header-right {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .theme-toggle {
+      min-height: 36px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2.5px solid var(--primary);
+      outline-offset: 2px;
     }
 
     .course-tag {
@@ -195,9 +254,9 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
     .paper-ref {
@@ -208,8 +267,9 @@
       font-weight: 700;
       color: var(--primary);
       background: var(--primary-soft);
-      padding: 4px 10px;
+      padding: 5px 10px;
       border-radius: 8px;
+      flex-shrink: 0;
     }
 
     .paper-cue {
@@ -220,10 +280,11 @@
 
     /* Tier Switcher */
     .tier-bar {
-      display: flex;
+      display: inline-flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 6px;
-      margin-bottom: 14px;
+      margin: 0;
     }
 
     .tier-pill {
@@ -242,8 +303,14 @@
     }
 
     .tier-pill.active {
-      background: var(--text);
-      border-color: var(--text);
+      background: #93c5fd;
+      border-color: #93c5fd;
+      color: #0b1220;
+    }
+
+    [data-theme="light"] .tier-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
       color: #ffffff;
     }
 
@@ -283,8 +350,52 @@
       font-size: 1.02rem;
       font-weight: 600;
       color: var(--text);
-      margin: 0 0 14px;
+      margin: 0 0 10px;
       line-height: 1.45;
+    }
+
+    .self-check-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 0 0 14px;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .self-check-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .self-check-label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+
+    .self-check-toggle {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 3px 9px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      min-height: 28px;
+    }
+
+    .self-check-body {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.42;
     }
 
     /* Options */
@@ -445,15 +556,16 @@
     }
 
     .reset-btn {
-      background: none;
-      border: none;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 999px;
       color: var(--text-muted);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 600;
-      text-decoration: underline;
       cursor: pointer;
-      padding: 6px 4px;
-      min-height: 36px;
+      padding: 5px 9px;
+      min-height: 32px;
+      white-space: nowrap;
     }
 
     /* Clean Offline Math Fallback Styling */
@@ -475,11 +587,20 @@
   <div class="app-shell">
     <header class="app-header">
       <div class="header-top">
-        <div>
+        <div class="header-left">
           <span class="course-tag">FA26 · PHYS 211 · PRACTICE 20</span>
           <h1 class="app-title">Torque &amp; Angular Momentum</h1>
         </div>
-        <div class="progress-pill" id="progressPill"><strong>0</strong> / 8 done</div>
+        <div class="header-center">
+          <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Switch between dark and light mode">
+            <span id="themeIcon">&#9728;&#65039;</span>
+            <span id="themeLabel">Light</span>
+          </button>
+        </div>
+        <div class="header-right">
+          <button type="button" class="reset-btn" id="resetBtn">Reset</button>
+          <div class="progress-pill" id="progressPill"><strong>0</strong> / 8 done</div>
+        </div>
       </div>
     </header>
 
@@ -489,10 +610,6 @@
 
     <main class="main-content">
       <section class="card" id="questionCard" aria-live="polite"></section>
-      <div class="utility-bar">
-        <span>Work on paper — check your reasoning here.</span>
-        <button type="button" class="reset-btn" id="resetBtn">Reset progress</button>
-      </div>
     </main>
   </div>
 
@@ -512,8 +629,9 @@
         cue: "Hanging mass <i>m</i> &mdash; Newton's 2nd Law for <i>T</i><sub>R</sub>",
         tiers: [
           {
-            tierTitle: "Tier 1 · Force Comparison & Direction",
-            question: `Because the hanging mass ${m("m", "<i>m</i>")} accelerates upward, how must the upward string tension ${m("T_R", "<i>T</i><sub>R</sub>")} compare to its weight ${m("mg", "<i>mg</i>")}?`,
+            <!-- Tier 1 · Force Comparison & Direction -->
+            question: `With ${m("m", "<i>m</i>")} accelerating upward, how does upward ${m("T_R", "<i>T</i><sub>R</sub>")} compare to weight ${m("mg", "<i>mg</i>")}?`,
+            selfCheck: `Sketch a free-body diagram for ${m("m", "<i>m</i>")} with upward ${m("T_R", "<i>T</i><sub>R</sub>")}, downward ${m("mg", "<i>mg</i>")}, and upward ${m("a", "<i>a</i>")} first.`,
             options: [
               {
                 id: "A",
@@ -550,8 +668,9 @@
         cue: "Cylindrical pulley (<i>M</i>, <i>R</i>) &mdash; Rotational Newton's 2nd Law",
         tiers: [
           {
-            tierTitle: "Tier 1 · Torque Signs & Rotation Sense",
-            question: `When the hanging mass on the right rises, the pulley rotates counterclockwise. How do the torques from ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")} combine in ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
+            <!-- Tier 1 · Torque Signs & Rotation Sense -->
+            question: `For counterclockwise pulley rotation as the right mass rises, how do ${m("T_L", "<i>T</i><sub>L</sub>")} and ${m("T_R", "<i>T</i><sub>R</sub>")} torques combine in ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
+            selfCheck: `Draw ${m("T_L", "<i>T</i><sub>L</sub>")} (left rim, down) and ${m("T_R", "<i>T</i><sub>R</sub>")} (right rim, down) on the pulley and check each rotation sense first.`,
             options: [
               {
                 id: "A",
@@ -580,8 +699,8 @@
             ]
           },
           {
-            tierTitle: "Tier 2 · Rotational Inertia Model",
-            question: `The worksheet specifies a cylindrical pulley of mass ${m("M", "<i>M</i>")} and radius ${m("R", "<i>R</i>")}. Which rotational inertia ${m("I", "<i>I</i>")} belongs on the right-hand side of ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
+            <!-- Tier 2 · Rotational Inertia Model -->
+            question: `Which rotational inertia ${m("I", "<i>I</i>")} fits the cylindrical pulley (${m("M", "<i>M</i>")}, ${m("R", "<i>R</i>")}) in ${m("\\sum \\tau = I\\alpha", "&Sigma;&tau; = <i>I&alpha;</i>")}?`,
             options: [
               {
                 id: "A",
@@ -612,8 +731,9 @@
         cue: "No-slip constraint <i>a</i> = <i>R&alpha;</i> in the pulley equation",
         tiers: [
           {
-            tierTitle: "Tier 1 · Eliminating α & Checking R",
-            question: `To rewrite your #2 equation in terms of linear acceleration ${m("a", "<i>a</i>")} using ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")}, what substitution do you make and what happens to the radius ${m("R", "<i>R</i>")}?`,
+            <!-- Tier 1 · Eliminating α & Checking R -->
+            question: `Using ${m("a = R\\alpha", "<i>a</i> = <i>R&alpha;</i>")} in #2, what substitution do you make and how does ${m("R", "<i>R</i>")} behave?`,
+            selfCheck: `Substitute ${m("\\alpha = a/R", "&alpha; = <i>a</i>/<i>R</i>")} into your #2 equation on paper and count powers of ${m("R", "<i>R</i>")} first.`,
             options: [
               {
                 id: "A",
@@ -644,8 +764,9 @@
         cue: "Substitute <i>T</i><sub>R</sub>, solve symbolically for <i>a</i>, then compute numerically",
         tiers: [
           {
-            tierTitle: "Tier 1 · Structure of the Symbolic Expression",
-            question: `After substituting ${m("T_R", "<i>T</i><sub>R</sub>")} from #1 into your #3 equation and isolating ${m("a", "<i>a</i>")}, what physical terms belong in the denominator (the total effective inertia resisting acceleration)?`,
+            <!-- Tier 1 · Structure of the Symbolic Expression -->
+            question: `After substituting ${m("T_R", "<i>T</i><sub>R</sub>")} from #1 into #3 and solving for ${m("a", "<i>a</i>")}, what is in the denominator?`,
+            selfCheck: `Group all terms with ${m("a", "<i>a</i>")} on one side on paper before choosing.`,
             options: [
               {
                 id: "A",
@@ -674,8 +795,8 @@
             ]
           },
           {
-            tierTitle: "Tier 2 · Limiting-Case Sanity Check",
-            question: `Before plugging in numbers on paper, test your symbolic formula for ${m("a", "<i>a</i>")}: what should it predict if ${m("T_L", "<i>T</i><sub>L</sub>")} were lowered until ${m("T_L = mg", "<i>T</i><sub>L</sub> = <i>mg</i>")}?`,
+            <!-- Tier 2 · Limiting-Case Sanity Check -->
+            question: `What does your symbolic ${m("a", "<i>a</i>")} predict if ${m("T_L = mg", "<i>T</i><sub>L</sub> = <i>mg</i>")}?`,
             options: [
               {
                 id: "A",
@@ -699,8 +820,8 @@
           }
         ],
         extensionTwist: {
-          title: "Extension / Twist · Pull vs. Hanging Weight",
-          question: `Suppose you replace the steady ${m("30\\text{ N}", "30 N")} downward pull ${m("T_L", "<i>T</i><sub>L</sub>")} with a hanging block whose weight is ${m("30\\text{ N}", "30 N")}. How does the upward acceleration ${m("a", "<i>a</i>")} of the ${m("2\\text{ kg}", "2 kg")} mass change?`,
+          title: "Optional: Extension / Twist",
+          question: `If the ${m("30\\text{ N}", "30 N")} pull ${m("T_L", "<i>T</i><sub>L</sub>")} is replaced by a ${m("30\\text{ N}", "30 N")} hanging weight, how does ${m("a", "<i>a</i>")} of the ${m("2\\text{ kg}", "2 kg")} mass change?`,
           options: [
             {
               id: "A",
@@ -730,8 +851,8 @@
         cue: "Particle angular momentum from <i>m</i>, <span class='vec'>r</span>, and <span class='vec'>v</span>",
         tiers: [
           {
-            tierTitle: "Tier 1 · Definition & Cross-Product Order",
-            question: `Which expression correctly defines the particle's angular momentum vector ${m("\\vec{L}", "<span class='vec'>L</span>")} about the origin?`,
+            <!-- Tier 1 · Definition & Cross-Product Order -->
+            question: `Which expression gives the particle's angular momentum ${m("\\vec{L}", "<span class='vec'>L</span>")} about the origin?`,
             options: [
               {
                 id: "A",
@@ -760,8 +881,8 @@
             ]
           },
           {
-            tierTitle: "Tier 2 · Unit-Vector Sign Trap",
-            question: `When you distribute ${m("\\vec{r} \\times m\\vec{v}", "<span class='vec'>r</span> &times; <i>m</i><span class='vec'>v</span>")}, you get two unit-vector cross products: ${m("\\hat{\\imath} \\times \\hat{\\jmath}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b>")}. What are their directions?`,
+            <!-- Tier 2 · Unit-Vector Sign Trap -->
+            question: `In ${m("\\vec{r} \\times m\\vec{v}", "<span class='vec'>r</span> &times; <i>m</i><span class='vec'>v</span>")}, what are ${m("\\hat{\\imath} \\times \\hat{\\jmath}", "<b>i&#x0302;</b> &times; <b>j&#x0302;</b>")} and ${m("\\hat{k} \\times \\hat{\\jmath}", "<b>k&#x0302;</b> &times; <b>j&#x0302;</b>")}?`,
             options: [
               {
                 id: "A",
@@ -785,8 +906,8 @@
           }
         ],
         extensionTwist: {
-          title: "Extension / Twist · Geometric Orthogonality Check",
-          question: `How can you verify algebraically from your computed ${m("\\vec{L}", "<span class='vec'>L</span>")} vector that ${m("\\vec{L}", "<span class='vec'>L</span>")} is perpendicular to both ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")}?`,
+          title: "Optional: Extension / Twist",
+          question: `How do you verify algebraically that ${m("\\vec{L}", "<span class='vec'>L</span>")} is perpendicular to both ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")}?`,
           options: [
             {
               id: "A",
@@ -816,8 +937,8 @@
         cue: "Spinning basketball at 8 rev/s &mdash; model, estimate, and units",
         tiers: [
           {
-            tierTitle: "Tier 1 · Inertia Model & Missing Parameters",
-            question: `The worksheet only gives the spin rate (${m("8\\text{ rev/s}", "8 rev/s")}). Which rigid-body model best represents a basketball, and what else do you need to compute ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}?`,
+            <!-- Tier 1 · Inertia Model & Missing Parameters -->
+            question: `Given ${m("8\\text{ rev/s}", "8 rev/s")}, which inertia model fits a basketball, and what else is needed for ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}?`,
             options: [
               {
                 id: "A",
@@ -840,8 +961,8 @@
             ]
           },
           {
-            tierTitle: "Tier 2 · Spin Rate Unit Conversion",
-            question: `How must you convert the given spin rate of ${m("8\\text{ rev/s}", "8 rev/s")} before substituting ${m("\\omega", "&omega;")} into ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}?`,
+            <!-- Tier 2 · Spin Rate Unit Conversion -->
+            question: `How do you convert ${m("8\\text{ rev/s}", "8 rev/s")} into ${m("\\omega", "&omega;")} (rad/s) for ${m("L = I\\omega", "<i>L</i> = <i>I&omega;</i>")}?`,
             options: [
               {
                 id: "A",
@@ -871,8 +992,8 @@
           }
         ],
         extensionTwist: {
-          title: "Extension / Twist · Spin-Down Time Under Friction",
-          question: `Suppose a steady frictional torque of magnitude ${m("\\tau_{\\text{fric}}", "&tau;<sub>fric</sub>")} opposes the basketball's spin until it comes to rest. Which rotational impulse–momentum relation gives the stopping time ${m("\\Delta t", "&Delta;<i>t</i>")} directly from your angular momentum ${m("L", "<i>L</i>")}?`,
+          title: "Optional: Extension / Twist",
+          question: `Under a steady frictional torque ${m("\\tau_{\\text{fric}}", "&tau;<sub>fric</sub>")} bringing the ball to rest, which relation gives stopping time ${m("\\Delta t", "&Delta;<i>t</i>")} from ${m("L", "<i>L</i>")}?`,
           options: [
             {
               id: "A",
@@ -902,8 +1023,9 @@
         cue: "Balancing on a moving bike vs. a stationary bike",
         tiers: [
           {
-            tierTitle: "Tier 1 · Gyroscopic Stability & Torque",
-            question: `In terms of torque and angular momentum, why is a moving bicycle much easier to keep upright than a stationary one?`,
+            <!-- Tier 1 · Gyroscopic Stability & Torque -->
+            question: `Using torque and angular momentum, why is a moving bike easier to balance than a stationary one?`,
+            selfCheck: `Sketch a single tilted spinning wheel with ${m("\\vec{L}", "<span class='vec'>L</span>")} along its axle, ${m("\\vec{r}", "<span class='vec'>r</span>")} from ground contact to its center, and downward ${m("\\vec{F}_g", "<span class='vec'>F</span><sub>g</sub>")} first.`,
             options: [
               {
                 id: "A",
@@ -940,8 +1062,8 @@
         cue: "Collapsing spinning star (<i>I</i> drops to 2/5 <i>I</i><sub>i</sub>) &mdash; rotational KE ratio",
         tiers: [
           {
-            tierTitle: "Tier 1 · Conservation Law & Spin Rate",
-            question: `As the star collapses under its own internal gravity with no external torque, which quantity stays constant and how does the angular speed ${m("\\omega", "&omega;")} respond?`,
+            <!-- Tier 1 · Conservation Law & Spin Rate -->
+            question: `With zero external torque during collapse, what is conserved and how does ${m("\\omega", "&omega;")} change?`,
             options: [
               {
                 id: "A",
@@ -964,8 +1086,8 @@
             ]
           },
           {
-            tierTitle: "Tier 2 · Scaling of Rotational Kinetic Energy",
-            question: `Knowing that ${m("L", "<i>L</i>")} is constant while ${m("I", "<i>I</i>")} shrinks, how does ${m("K_{\\text{rot}} = \\frac{1}{2}I\\omega^2 = \\frac{L^2}{2I}", "<i>K</i><sub>rot</sub> = &frac12;<i>I&omega;</i><sup>2</sup> = <i>L</i><sup>2</sup> / (2<i>I</i>)")} change?`,
+            <!-- Tier 2 · Scaling of Rotational Kinetic Energy -->
+            question: `With ${m("L", "<i>L</i>")} constant and ${m("I", "<i>I</i>")} shrinking, how does ${m("K_{\\text{rot}} = \\frac{1}{2}I\\omega^2 = \\frac{L^2}{2I}", "<i>K</i><sub>rot</sub> = &frac12;<i>I&omega;</i><sup>2</sup> = <i>L</i><sup>2</sup> / (2<i>I</i>)")} change?`,
             options: [
               {
                 id: "A",
@@ -989,8 +1111,8 @@
           }
         ],
         extensionTwist: {
-          title: "Extension / Twist · Energy Accounting",
-          question: `No external torque acts on the collapsing star, yet its rotational kinetic energy increases. Where does that extra kinetic energy come from?`,
+          title: "Optional: Extension / Twist",
+          question: `With zero external torque on the collapsing star, where does the extra rotational kinetic energy come from?`,
           options: [
             {
               id: "A",
@@ -1015,13 +1137,36 @@
       }
     ];
 
-    const STORAGE_KEY = "fa26_phys211_practice20_companion_v1";
+    const STORAGE_KEY = "fa26_phys211_practice20_companion_v7";
 
     const state = {
       probIdx: 0,
       tierIdx: 0, // 0..tiers.length-1, or 'twist'
+      hideSelfCheck: false,
+      theme: "dark", // default dark mode
       answers: {} // key: `${probId}:${tierKey}` -> { selectedId, solved }
     };
+
+    function applyTheme(theme) {
+      const mode = theme === "light" ? "light" : "dark";
+      state.theme = mode;
+      if (mode === "light") {
+        document.documentElement.setAttribute("data-theme", "light");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      const iconEl = document.getElementById("themeIcon");
+      const labelEl = document.getElementById("themeLabel");
+      if (iconEl && labelEl) {
+        if (mode === "dark") {
+          iconEl.innerHTML = "&#9728;&#65039;";
+          labelEl.textContent = "Light";
+        } else {
+          iconEl.innerHTML = "&#127769;";
+          labelEl.textContent = "Dark";
+        }
+      }
+    }
 
     function loadState() {
       try {
@@ -1031,13 +1176,20 @@
           if (parsed && typeof parsed.answers === "object") {
             state.answers = parsed.answers;
           }
+          if (parsed && (parsed.theme === "dark" || parsed.theme === "light")) {
+            state.theme = parsed.theme;
+          }
         }
       } catch (_) {}
+      applyTheme(state.theme);
     }
 
     function saveState() {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({ answers: state.answers }));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          answers: state.answers,
+          theme: state.theme
+        }));
       } catch (_) {}
     }
 
@@ -1181,17 +1333,27 @@
         nextDisabled = true;
       }
 
-      const headingText = isTwist ? activeItem.title : activeItem.tierTitle;
-      const headingCls = isTwist ? "tier-heading twist-heading" : "tier-heading";
+      const headingHtml = isTwist
+        ? `<p class="tier-heading twist-heading">${activeItem.title}</p>`
+        : "";
 
       card.innerHTML = `
         <div class="card-meta">
           <span class="paper-ref">${prob.paperRef}</span>
+          ${tierPillsHtml}
         </div>
         <p class="paper-cue">${prob.cue}</p>
-        ${tierPillsHtml}
-        <p class="${headingCls}">${headingText}</p>
+        ${headingHtml}
         <p class="question-text">${activeItem.question}</p>
+        ${activeItem.selfCheck ? `
+          <div class="self-check-box" id="selfCheckBox">
+            <div class="self-check-header">
+              <span class="self-check-label">Paper-First</span>
+              <button type="button" class="self-check-toggle" id="toggleSelfCheckBtn">${state.hideSelfCheck ? "Show prompt" : "Hide"}</button>
+            </div>
+            ${state.hideSelfCheck ? "" : `<p class="self-check-body">${activeItem.selfCheck}</p>`}
+          </div>
+        ` : ""}
         ${optionsHtml}
         ${feedbackHtml}
         <div class="card-footer">
@@ -1199,6 +1361,14 @@
           <button type="button" class="nav-btn primary" id="nextBtn" ${nextDisabled ? "disabled" : ""}>${nextLabel}</button>
         </div>
       `;
+
+      const toggleScBtn = document.getElementById("toggleSelfCheckBtn");
+      if (toggleScBtn) {
+        toggleScBtn.addEventListener("click", () => {
+          state.hideSelfCheck = !state.hideSelfCheck;
+          render();
+        });
+      }
 
       // Bind tier pills
       card.querySelectorAll(".tier-pill").forEach((btn) => {
@@ -1259,6 +1429,11 @@
       renderNav();
       renderCard();
     }
+
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      applyTheme(state.theme === "dark" ? "light" : "dark");
+      saveState();
+    });
 
     document.getElementById("resetBtn").addEventListener("click", () => {
       state.answers = {};
