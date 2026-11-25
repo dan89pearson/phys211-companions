@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>PHYS 211: Practice 21 — Gravity Companion</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" crossorigin="anonymous" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" crossorigin="anonymous" onload="window.__katexReady && window.__katexReady()"></script>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --surface: #ffffff;
+      --surface-alt: #f0f4fa;
+      --text: #141d2b;
+      --text-muted: #526176;
+      --border: #d8e1ee;
+      --primary: #1d4ed8;
+      --primary-soft: #e8f0fe;
+      --primary-dark: #163ca8;
+      --accent: #7c3aed;
+      --accent-soft: #f3e8ff;
+      --ok-bg: #ecfdf3;
+      --ok-border: #16a34a;
+      --ok-text: #14532d;
+      --warn-bg: #fff7ed;
+      --warn-border: #ea580c;
+      --warn-text: #7c2d12;
+      --radius: 14px;
+      --shadow: 0 2px 10px rgba(20, 29, 43, 0.06);
+    }
+
+    [data-theme="dark"] {
+      --bg: #0c111a;
+      --surface: #141c2b;
+      --surface-alt: #1b2538;
+      --text: #edf2f9;
+      --text-muted: #9fb0c7;
+      --border: #28364e;
+      --primary: #3b82f6;
+      --primary-soft: rgba(59, 130, 246, 0.16);
+      --primary-dark: #2563eb;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.16);
+      --ok-bg: rgba(34, 197, 94, 0.14);
+      --ok-border: #22c55e;
+      --ok-text: #86efac;
+      --warn-bg: rgba(251, 146, 60, 0.14);
+      --warn-border: #fb923c;
+      --warn-text: #fdba74;
+      --shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: hidden;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+
+    .app-shell {
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    /* Header */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 16px 10px;
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+
+    .header-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-left {
+      min-width: 0;
+    }
+
+    .header-center {
+      display: flex;
+      justify-content: center;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 6px;
+    }
+
+    .theme-toggle {
+      min-height: 36px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text);
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2.5px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    .course-tag {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--primary);
+      display: block;
+    }
+
+    .app-title {
+      margin: 1px 0 0;
+      font-size: 1.02rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.25;
+    }
+
+    .progress-pill {
+      flex-shrink: 0;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .progress-pill strong {
+      color: var(--primary);
+    }
+
+    /* Problem Selector Dropdown */
+    .prob-select-wrap {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 8px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .prob-select {
+      width: auto;
+      min-width: 132px;
+      max-width: 220px;
+      min-height: 38px;
+      padding: 6px 34px 6px 13px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background-color: var(--surface-alt);
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 16px;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    .prob-select:focus-visible,
+    .tier-pill:focus-visible,
+    .opt-btn:focus-visible,
+    .nav-btn:focus-visible,
+    .reset-btn:focus-visible,
+    .self-check-toggle:focus-visible {
+      outline: 2.5px solid var(--primary);
+      outline-offset: 2px;
+    }
+
+    /* Main Card */
+    .main-content {
+      flex: 1;
+      padding: 14px 14px 20px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .paper-ref {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-soft);
+      padding: 5px 10px;
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .paper-cue {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin: 0 0 12px;
+    }
+
+    .problem-statement-box {
+      background: var(--surface-alt);
+      border-left: 3.5px solid var(--accent);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 0 0 12px;
+      font-size: 0.9rem;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .orbit-figure-wrap {
+      margin-top: 10px;
+      padding: 8px 6px 4px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .orbit-figure-wrap svg {
+      width: 100%;
+      max-width: 390px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .orbit-figure-caption {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      margin: 4px 0 2px;
+    }
+
+    .paper-ref.extra-ref {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    /* Tier Switcher */
+    .tier-bar {
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      margin: 0;
+    }
+
+    .tier-pill {
+      min-height: 36px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-alt);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .tier-pill.active {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    [data-theme="dark"] .tier-pill.active {
+      background: #93c5fd;
+      border-color: #93c5fd;
+      color: #0b1220;
+    }
+
+    .tier-pill.solved:not(.active) {
+      background: var(--ok-bg);
+      border-color: var(--ok-border);
+      color: var(--ok-text);
+    }
+
+    .tier-pill.twist {
+      border-color: #c4b5fd;
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .tier-pill.twist.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
+    }
+
+    /* Question */
+    .tier-heading {
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin: 0 0 6px;
+    }
+
+    .tier-heading.twist-heading {
+      color: var(--accent);
+    }
+
+    .question-text {
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 10px;
+      line-height: 1.45;
+    }
+
+    .self-check-box {
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin: 0 0 14px;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .self-check-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .self-check-box.collapsed .self-check-header {
+      margin-bottom: 0;
+    }
+
+    .self-check-label {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--primary);
+    }
+
+    .self-check-toggle {
+      background: var(--primary);
+      border: 1.5px solid var(--primary);
+      border-radius: 999px;
+      padding: 4px 13px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      min-height: 30px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.05s;
+    }
+
+    .self-check-toggle:hover {
+      background: var(--primary-dark);
+      border-color: var(--primary-dark);
+    }
+
+    .self-check-toggle:active {
+      transform: scale(0.97);
+    }
+
+    .self-check-toggle[aria-pressed="true"] {
+      background: var(--ok-bg);
+      border-color: var(--ok-border);
+      color: var(--ok-text);
+      box-shadow: none;
+    }
+
+    .self-check-body {
+      margin: 0;
+      color: var(--text-muted);
+      line-height: 1.42;
+    }
+
+    /* Options */
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .opt-btn {
+      width: 100%;
+      min-height: 52px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      text-align: left;
+      font-size: 0.94rem;
+      line-height: 1.4;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      transition: border-color 0.15s, background 0.15s, transform 0.05s;
+    }
+
+    .opt-btn:active {
+      transform: scale(0.99);
+    }
+
+    .opt-letter {
+      flex: 0 0 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--surface-alt);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1px;
+    }
+
+    .opt-body {
+      flex: 1;
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+
+    .opt-btn.selected-correct {
+      border-color: var(--ok-border);
+      background: var(--ok-bg);
+    }
+
+    .opt-btn.selected-correct .opt-letter {
+      background: var(--ok-border);
+      border-color: var(--ok-border);
+      color: #ffffff;
+    }
+
+    .opt-btn.selected-wrong {
+      border-color: var(--warn-border);
+      background: var(--warn-bg);
+    }
+
+    .opt-btn.selected-wrong .opt-letter {
+      background: var(--warn-border);
+      border-color: var(--warn-border);
+      color: #ffffff;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      margin-top: 14px;
+      padding: 13px 14px;
+      border-radius: 12px;
+      border-left: 4px solid transparent;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      display: none;
+    }
+
+    .feedback-box.visible {
+      display: block;
+    }
+
+    .feedback-box.correct {
+      background: var(--ok-bg);
+      border-color: var(--ok-border);
+      color: var(--ok-text);
+    }
+
+    .feedback-box.wrong {
+      background: var(--warn-bg);
+      border-color: var(--warn-border);
+      color: var(--warn-text);
+    }
+
+    .feedback-label {
+      font-size: 0.78rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    /* Footer Navigation */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-btn {
+      min-height: 48px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+    }
+
+    .nav-btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+    }
+
+    .nav-btn.primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .reset-btn {
+      background: var(--surface-alt);
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      color: var(--text);
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* Clean Offline Math Fallback Styling */
+    .math {
+      white-space: nowrap;
+      font-family: "Times New Roman", Georgia, serif;
+      font-size: 1.04em;
+    }
+    .vec {
+      font-weight: 700;
+      font-style: italic;
+    }
+    .katex {
+      font-size: 1.02em;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="header-left">
+          <span class="course-tag">FA26 · PHYS 211 · PRACTICE 21</span>
+          <h1 class="app-title">Newtonian Gravity</h1>
+        </div>
+        <div class="header-center">
+          <button type="button" class="theme-toggle" id="themeToggleBtn" aria-label="Switch between light and dark mode">
+            <span id="themeIcon">&#127769;</span>
+            <span id="themeLabel">Dark</span>
+          </button>
+        </div>
+        <div class="header-right">
+          <button type="button" class="reset-btn" id="resetBtn" aria-label="Reset progress" title="Reset progress">&#8634;</button>
+        </div>
+      </div>
+    </header>
+
+    <nav class="prob-select-wrap" aria-label="Worksheet Problems">
+      <select class="prob-select" id="probSelect" aria-label="Select worksheet problem"></select>
+      <div class="progress-pill" id="progressPill"><strong>0</strong> / 4 done</div>
+    </nav>
+
+    <main class="main-content">
+      <section class="card" id="questionCard" aria-live="polite"></section>
+    </main>
+  </div>
+
+  <script>
+    // Helper: creates an inline math span that upgrades to KaTeX when online,
+    // and renders clean semantic HTML/Unicode when offline (zero raw TeX delimiters).
+    function m(tex, htmlFallback) {
+      const safeTex = tex.replace(/"/g, "&quot;");
+      return `<span class="math" data-tex="${safeTex}">${htmlFallback}</span>`;
+    }
+
+    const WORKSHEET_DATA = [
+      {
+        id: "P1",
+        shortLabel: "#1",
+        paperRef: "Problem 1",
+        cue: "Net gravitational force on planet A &mdash; magnitude &amp; &theta; (CCW from +<i>x</i>)",
+        tiers: [
+          {
+            // Tier 1 · Force Directions & Vector Addition
+            question: `Which direction does ${m("\\vec{F}_{\\text{net},A}", "<span class='vec'>F</span><sub>net,A</sub>")} point, and how do its components combine?`,
+            selfCheck: `Sketch planet A with the attractive forces from B and C, and identify the quadrant of the net force first.`,
+            options: [
+              {
+                id: "A",
+                text: `Quadrant IV (down-right), because gravity pushes planet A away from B and C.`,
+                isCorrect: false,
+                feedback: `Gravity is always attractive. Planet B pulls A to the left (${m("-x", "&minus;<i>x</i>")}), and planet C pulls A upward (${m("+y", "+<i>y</i>")}).`
+              },
+              {
+                id: "B",
+                text: `Along a single axis, with magnitude ${m("F_{BA} + F_{CA}", "<i>F</i><sub>BA</sub> + <i>F</i><sub>CA</sub>")} added directly.`,
+                isCorrect: false,
+                feedback: `Because ${m("\\vec{F}_{BA}", "<span class='vec'>F</span><sub>BA</sub>")} points along ${m("-x", "&minus;<i>x</i>")} and ${m("\\vec{F}_{CA}", "<span class='vec'>F</span><sub>CA</sub>")} points along ${m("+y", "+<i>y</i>")}, they are perpendicular—you must combine them as vector components, not by simple addition.`
+              },
+              {
+                id: "C",
+                text: `Quadrant II (up-left), with components ${m("(-F_{BA},\\, +F_{CA})", "(&minus;<i>F</i><sub>BA</sub>, +<i>F</i><sub>CA</sub>)")} and magnitude ${m("\\sqrt{F_{BA}^2 + F_{CA}^2}", "&radic;(<i>F</i><sub>BA</sub><sup>2</sup> + <i>F</i><sub>CA</sub><sup>2</sup>)")}.`,
+                isCorrect: true,
+                feedback: `Spot on! B pulls A in the ${m("-x", "&minus;<i>x</i>")} direction and C pulls A in the ${m("+y", "+<i>y</i>")} direction, placing the resultant squarely in Quadrant II.`
+              },
+              {
+                id: "D",
+                text: `Quadrant I (up-right), because both masses ${m("m_B", "<i>m</i><sub>B</sub>")} and ${m("m_C", "<i>m</i><sub>C</sub>")} are positive.`,
+                isCorrect: false,
+                feedback: `Positive masses mean attraction toward each planet. Since B sits to the left of A, its pull has a negative ${m("x", "<i>x</i>")}-component.`
+              }
+            ]
+          },
+          {
+            // Tier 2 · Units & Quadrant II Angle Adjustment
+            question: `Before calculating magnitude and ${m("\\theta", "&theta;")} (CCW from ${m("+x", "+<i>x</i>")}), which unit conversion and angle check are required?`,
+            options: [
+              {
+                id: "A",
+                text: `Keep distances in AU (since ${m("G", "<i>G</i>")} is universal), and report the raw calculator output of ${m("\\tan^{-1}(F_y/F_x)", "tan<sup>&minus;1</sup>(<i>F</i><sub>y</sub>/<i>F</i><sub>x</sub>)")}.`,
+                isCorrect: false,
+                feedback: `SI ${m("G", "<i>G</i>")} uses meters, so AU must be converted to meters first. Also, with ${m("F_x < 0", "<i>F</i><sub>x</sub> &lt; 0")} and ${m("F_y > 0", "<i>F</i><sub>y</sub> &gt; 0")}, ${m("\\tan^{-1}(F_y/F_x)", "tan<sup>&minus;1</sup>(<i>F</i><sub>y</sub>/<i>F</i><sub>x</sub>)")} returns a Quadrant IV negative angle.`
+              },
+              {
+                id: "B",
+                text: `Convert AU to meters before squaring ${m("r", "<i>r</i>")}, and add ${m("180^\\circ", "180&deg;")} to ${m("\\tan^{-1}(F_y/F_x)", "tan<sup>&minus;1</sup>(<i>F</i><sub>y</sub>/<i>F</i><sub>x</sub>)")} so ${m("\\theta", "&theta;")} lies in Quadrant II.`,
+                isCorrect: true,
+                feedback: `Exactly! Converting AU to meters gives force in newtons, and adding ${m("180^\\circ", "180&deg;")} shifts the calculator's negative angle into Quadrant II (${m("90^\\circ < \\theta < 180^\\circ", "90&deg; &lt; &theta; &lt; 180&deg;")}). Finish the arithmetic on paper.`
+              },
+              {
+                id: "C",
+                text: `Convert AU to meters, and take ${m("|\\tan^{-1}(F_y/F_x)|", "|tan<sup>&minus;1</sup>(<i>F</i><sub>y</sub>/<i>F</i><sub>x</sub>)|")} directly as ${m("\\theta", "&theta;")}.`,
+                isCorrect: false,
+                feedback: `Good catch on converting AU to meters, but taking the absolute value gives a Quadrant I reference angle (above ${m("-x", "&minus;<i>x</i>")}) instead of the angle measured CCW from ${m("+x", "+<i>x</i>")}.`
+              },
+              {
+                id: "D",
+                text: `Convert AU to kilometers, and add ${m("90^\\circ", "90&deg;")} to ${m("\\tan^{-1}(F_y/F_x)", "tan<sup>&minus;1</sup>(<i>F</i><sub>y</sub>/<i>F</i><sub>x</sub>)")}.`,
+                isCorrect: false,
+                feedback: `Two slips: force in newtons requires meters (not km), and shifting a Quadrant IV angle by ${m("90^\\circ", "90&deg;")} rotates it into the wrong quadrant—use ${m("+180^\\circ", "+180&deg;")}.`
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "P2",
+        shortLabel: "#2",
+        paperRef: "Problem 2",
+        cue: "Gravitational potential energy of the ABC planetary system",
+        tiers: [
+          {
+            // Tier 1 · Unique Pairs & Hypotenuse Distance
+            question: `How many pairwise terms belong in ${m("U_{\\text{sys}}", "<i>U</i><sub>sys</sub>")} for the ABC system, and what is the separation ${m("r_{BC}", "<i>r</i><sub>BC</sub>")}?`,
+            selfCheck: `List every unique pair of planets in the ABC system and compute ${m("r_{BC}", "<i>r</i><sub>BC</sub>")} in AU from the right triangle first.`,
+            options: [
+              {
+                id: "A",
+                text: `2 terms (AB and AC only), because #1 focused on planet A.`,
+                isCorrect: false,
+                feedback: `Total system potential energy includes every interacting pair—planets B and C also attract each other, so you cannot omit the BC pair.`
+              },
+              {
+                id: "B",
+                text: `6 terms (AB, BA, AC, CA, BC, CB), with ${m("r_{BC} = 8\\text{ AU}", "<i>r</i><sub>BC</sub> = 8 AU")}.`,
+                isCorrect: false,
+                feedback: `Counting both AB and BA double-counts each pair's shared potential energy. Also, B–C is the hypotenuse of a right triangle with legs 5 AU and 3 AU, not their sum.`
+              },
+              {
+                id: "C",
+                text: `3 unique pairs (AB, AC, BC), with ${m("r_{BC} = 4\\text{ AU}", "<i>r</i><sub>BC</sub> = 4 AU")}.`,
+                isCorrect: false,
+                feedback: `Right number of pairs, but check the right triangle: 5 AU and 3 AU are the two perpendicular legs, not hypotenuse and leg, so ${m("r_{BC} > 5\\text{ AU}", "<i>r</i><sub>BC</sub> &gt; 5 AU")}.`
+              },
+              {
+                id: "D",
+                text: `3 unique pairs (AB, AC, BC), with ${m("r_{BC} = \\sqrt{5^2 + 3^2}\\text{ AU}", "<i>r</i><sub>BC</sub> = &radic;(5<sup>2</sup> + 3<sup>2</sup>) AU")}.`,
+                isCorrect: true,
+                feedback: `Correct! Three planets form three unique pairs, and the Pythagorean theorem gives ${m("r_{BC} = \\sqrt{34}\\text{ AU}", "<i>r</i><sub>BC</sub> = &radic;34 AU")}. Move to Tier 2 to check signs and distance powers.`
+              }
+            ]
+          },
+          {
+            // Tier 2 · Sign, 1/r Power & Scalar Addition
+            question: `When summing ${m("U_{AB} + U_{AC} + U_{BC}", "<i>U</i><sub>AB</sub> + <i>U</i><sub>AC</sub> + <i>U</i><sub>BC</sub>")}, how do the signs, distance powers, and addition work?`,
+            options: [
+              {
+                id: "A",
+                text: `Each term is negative and proportional to ${m("1/r", "1/<i>r</i>")} (in meters), and all three add as scalars.`,
+                isCorrect: true,
+                feedback: `Nailed it! Potential energy is a scalar (${m("U = -Gm_1 m_2 / r", "<i>U</i> = &minus;<i>Gm</i><sub>1</sub><i>m</i><sub>2</sub>/<i>r</i>")}), so convert each distance to meters and add the three negative terms directly on paper.`
+              },
+              {
+                id: "B",
+                text: `Each term is negative and proportional to ${m("1/r^2", "1/<i>r</i><sup>2</sup>")}, matching the gravitational force law.`,
+                isCorrect: false,
+                feedback: `Gravitational force scales as ${m("1/r^2", "1/<i>r</i><sup>2</sup>")}, but gravitational potential energy scales as ${m("1/r", "1/<i>r</i>")}. Check units: joules require ${m("r", "<i>r</i>")} to the first power.`
+              },
+              {
+                id: "C",
+                text: `Resolve the three ${m("U", "<i>U</i>")} terms into ${m("x", "<i>x</i>")}- and ${m("y", "<i>y</i>")}-components along the triangle sides.`,
+                isCorrect: false,
+                feedback: `Energy is a scalar, not a vector! There are no components or angles here—just add the three signed energies.`
+              }
+            ]
+          }
+        ],
+        extensionTwist: {
+          title: "Optional: Extension / Twist",
+          question: `Your total ${m("U_{\\text{sys}}", "<i>U</i><sub>sys</sub>")} is negative. What does ${m("|U_{\\text{sys}}|", "|<i>U</i><sub>sys</sub>|")} represent physically?`,
+          options: [
+            {
+              id: "A",
+              text: `The total kinetic energy the three planets must currently have.`,
+              isCorrect: false,
+              feedback: `Potential energy depends only on positions and masses, not on how fast the planets are moving right now.`
+            },
+            {
+              id: "B",
+              text: `The minimum external work required to separate all three planets infinitely far apart from each other.`,
+              isCorrect: true,
+              feedback: `Exactly! With ${m("U = 0", "<i>U</i> = 0")} at infinite separation, raising the system from ${m("U_{\\text{sys}} < 0", "<i>U</i><sub>sys</sub> &lt; 0")} to ${m("0", "0")} requires external work equal to ${m("|U_{\\text{sys}}|", "|<i>U</i><sub>sys</sub>|")}.`
+            },
+            {
+              id: "C",
+              text: `The energy released if all three planets collapse to a single point.`,
+              isCorrect: false,
+              feedback: `For point masses, ${m("U \\to -\\infty", "<i>U</i> &rarr; &minus;&infin;")} as separation shrinks to zero, so collapsing releases far more energy. ${m("|U_{\\text{sys}}|", "|<i>U</i><sub>sys</sub>|")} specifically measures the work needed to unbind them to ${m("r \\to \\infty", "<i>r</i> &rarr; &infin;")}.`
+            }
+          ]
+        }
+      },
+      {
+        id: "P3",
+        shortLabel: "#3",
+        paperRef: "Problem 3",
+        cue: "Escape velocity from planet A's surface (<i>R</i> = 6&times;10<sup>4</sup> km)",
+        tiers: [
+          {
+            // Tier 1 · Formula Selection, Mass Independence & Units
+            question: `Using the escape velocity formula at planet A's surface, what goes into the calculation—and does the rocket's mass matter?`,
+            options: [
+              {
+                id: "A",
+                text: `Use planet A's mass ${m("M", "<i>M</i>")} and convert ${m("R", "<i>R</i>")} to meters inside ${m("\\sqrt{2GM / R}", "&radic;(2<i>GM</i> / <i>R</i>)")}; the rocket's mass does not affect escape speed.`,
+                isCorrect: true,
+                feedback: `Spot on! Convert ${m("6\\times 10^4\\text{ km}", "6&times;10<sup>4</sup> km")} to meters (${m("\\times 10^3", "&times;10<sup>3</sup>")}) and plug planet A's mass ${m("M", "<i>M</i>")} into ${m("v_{\\text{esc}} = \\sqrt{2GM / R}", "<i>v</i><sub>esc</sub> = &radic;(2<i>GM</i> / <i>R</i>)")} on paper.`
+              },
+              {
+                id: "B",
+                text: `Use planet A's mass ${m("M", "<i>M</i>")} and ${m("R", "<i>R</i>")} in km inside ${m("\\sqrt{GM / R}", "&radic;(<i>GM</i> / <i>R</i>)")}; the rocket's mass does not affect escape speed.`,
+                isCorrect: false,
+                feedback: `Two traps: ${m("\\sqrt{GM/R}", "&radic;(<i>GM</i>/<i>R</i>)")} is circular orbital speed (missing the factor of 2), and ${m("R", "<i>R</i>")} must be in meters to match SI ${m("G", "<i>G</i>")}.`
+              },
+              {
+                id: "C",
+                text: `You cannot compute ${m("v_{\\text{esc}}", "<i>v</i><sub>esc</sub>")} without knowing the mass of the rocket.`,
+                isCorrect: false,
+                feedback: `Notice that the rocket's mass ${m("m", "<i>m</i>")} does not appear in ${m("v_{\\text{esc}} = \\sqrt{2GM / R}", "<i>v</i><sub>esc</sub> = &radic;(2<i>GM</i> / <i>R</i>)")}—escape speed depends only on planet A's mass ${m("M", "<i>M</i>")} and radius ${m("R", "<i>R</i>")}.`
+              },
+              {
+                id: "D",
+                text: `Use planet A's mass ${m("M", "<i>M</i>")} and convert ${m("R", "<i>R</i>")} to meters inside ${m("\\sqrt{2GM / R^2}", "&radic;(2<i>GM</i> / <i>R</i><sup>2</sup>)")}.`,
+                isCorrect: false,
+                feedback: `Check the units! Dividing by ${m("R^2", "<i>R</i><sup>2</sup>")} puts acceleration (${m("\\text{m/s}^2", "m/s<sup>2</sup>")}) under the square root instead of ${m("\\text{m}^2/\\text{s}^2", "m<sup>2</sup>/s<sup>2</sup>")}. Escape speed uses ${m("1/R", "1/<i>R</i>")}.`
+              }
+            ]
+          }
+        ]
+      },
+      {
+        id: "P4",
+        shortLabel: "#4",
+        paperRef: "Problem 4",
+        cue: "Circular orbital velocity 100 km above planet A's surface",
+        tiers: [
+          {
+            // Tier 1 · Orbital Radius r = R + h & Formula Choice
+            question: `For a circular orbit ${m("100\\text{ km}", "100 km")} above planet A's surface, what radius ${m("r", "<i>r</i>")} and formula give ${m("v_{\\text{orb}}", "<i>v</i><sub>orb</sub>")}?`,
+            options: [
+              {
+                id: "A",
+                text: `Use ${m("r = 100\\text{ km}", "<i>r</i> = 100 km")} (in meters) inside ${m("\\sqrt{GM / r}", "&radic;(<i>GM</i> / <i>r</i>)")}.`,
+                isCorrect: false,
+                feedback: `${m("100\\text{ km}", "100 km")} is only the altitude ${m("h", "<i>h</i>")} above the surface. Gravity and the circular orbit are measured from planet A's center, so include ${m("R", "<i>R</i>")}.`
+              },
+              {
+                id: "B",
+                text: `Use ${m("r = R + 100\\text{ km}", "<i>r</i> = <i>R</i> + 100 km")} (in meters) inside ${m("\\sqrt{2GM / r}", "&radic;(2<i>GM</i> / <i>r</i>)")}.`,
+                isCorrect: false,
+                feedback: `Right orbital radius ${m("r = R + h", "<i>r</i> = <i>R</i> + <i>h</i>")}, but ${m("\\sqrt{2GM / r}", "&radic;(2<i>GM</i> / <i>r</i>)")} is escape velocity! Circular orbital velocity has no factor of 2.`
+              },
+              {
+                id: "C",
+                text: `Use ${m("r = R + 100\\text{ km}", "<i>r</i> = <i>R</i> + 100 km")} (in meters) inside ${m("\\sqrt{GM / r}", "&radic;(<i>GM</i> / <i>r</i>)")}.`,
+                isCorrect: true,
+                feedback: `Right! Measure ${m("r = R + h", "<i>r</i> = <i>R</i> + <i>h</i>")} from planet A's center, convert to meters, and compute ${m("v_{\\text{orb}} = \\sqrt{GM / r}", "<i>v</i><sub>orb</sub> = &radic;(<i>GM</i> / <i>r</i>)")} on paper.`
+              },
+              {
+                id: "D",
+                text: `Use ${m("r = R - 100\\text{ km}", "<i>r</i> = <i>R</i> &minus; 100 km")} (in meters) inside ${m("\\sqrt{GM / r}", "&radic;(<i>GM</i> / <i>r</i>)")}.`,
+                isCorrect: false,
+                feedback: `The satellite orbits <em>above</em> the surface, so its distance from the center of planet A is greater than ${m("R", "<i>R</i>")}, not smaller.`
+              }
+            ]
+          }
+        ],
+        extensionTwist: {
+          title: "Optional: Extension / Twist",
+          question: `Since altitude ${m("h = 100\\text{ km} \\ll R", "<i>h</i> = 100 km &ll; <i>R</i>")} (where ${m("\\ll", "&ll;")} means "much less than"), how should your ${m("v_{\\text{orb}}", "<i>v</i><sub>orb</sub>")} in #4 compare to ${m("v_{\\text{esc}}", "<i>v</i><sub>esc</sub>")} in #3?`,
+          options: [
+            {
+              id: "A",
+              text: `Nearly equal to ${m("v_{\\text{esc}}", "<i>v</i><sub>esc</sub>")}, because the satellite is almost at the surface.`,
+              isCorrect: false,
+              feedback: `Even right above the surface, escaping to infinity requires significantly more speed than staying in a bound circular orbit.`
+            },
+            {
+              id: "B",
+              text: `Roughly ${m("v_{\\text{esc}} / \\sqrt{2}", "<i>v</i><sub>esc</sub> / &radic;2")} (about 71% of ${m("v_{\\text{esc}}", "<i>v</i><sub>esc</sub>")}), since ${m("r \\approx R", "<i>r</i> &approx; <i>R</i>")} and ${m("v_{\\text{esc}} = \\sqrt{2}\\,v_{\\text{orb}}", "<i>v</i><sub>esc</sub> = &radic;2&thinsp;<i>v</i><sub>orb</sub>")}.`,
+              isCorrect: true,
+              feedback: `Great sanity check! Because ${m("100\\text{ km}", "100 km")} is tiny compared to ${m("6\\times 10^4\\text{ km}", "6&times;10<sup>4</sup> km")}, checking that ${m("v_{\\text{orb}} \\approx 0.707\\,v_{\\text{esc}}", "<i>v</i><sub>orb</sub> &approx; 0.707&thinsp;<i>v</i><sub>esc</sub>")} instantly verifies both #3 and #4.`
+            },
+            {
+              id: "C",
+              text: `Roughly ${m("\\sqrt{2}\\,v_{\\text{esc}}", "&radic;2&thinsp;<i>v</i><sub>esc</sub>")}, because staying in orbit requires extra centripetal speed.`,
+              isCorrect: false,
+              feedback: `That ratio is flipped—a bound circular orbit has <em>less</em> speed than escape speed, not more.`
+            }
+          ]
+        }
+      },
+      {
+        id: "P_EXTRA",
+        shortLabel: "Extra",
+        paperRef: "Extra Problem",
+        isExtra: true,
+        cue: "Challenge (not counted in 4-problem progress) &mdash; Orbit transfer",
+        statement: `<strong>Optional Challenge:</strong> A spacecraft is in a circular orbit around planet A (${m("M = 6\\times 10^{26}\\text{ kg}", "<i>M</i> = 6&times;10<sup>26</sup> kg")}) at orbital radius ${m("r_1 = 8\\times 10^7\\text{ m}", "<i>r</i><sub>1</sub> = 8&times;10<sup>7</sup> m")}. At the burn point shown below, its thrusters fire briefly forward to place it on an elliptical orbit whose farthest point from planet A's center is ${m("r_2 = 2.4\\times 10^8\\text{ m}", "<i>r</i><sub>2</sub> = 2.4&times;10<sup>8</sup> m")}. Find the spacecraft's speed ${m("v_1", "<i>v</i><sub>1</sub>")} right after the burn.<div class="orbit-figure-wrap">
+  <svg viewBox="0 0 360 218" role="img" aria-label="Diagram showing an initial circular orbit of radius r1 around Planet A, and an elliptical transfer orbit tangent at the burn point reaching farthest distance r2 = 3 r1 on the opposite side.">
+    <defs>
+      <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="var(--primary)" />
+      </marker>
+      <marker id="arrowPurple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="var(--accent)" />
+      </marker>
+      <marker id="arrowMuted" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+        <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="var(--text-muted)" />
+      </marker>
+    </defs>
+
+    <!-- Dashed horizontal apsidal line -->
+    <line x1="58" y1="108" x2="314" y2="108" stroke="var(--border)" stroke-width="1.2" stroke-dasharray="4 4" />
+
+    <!-- Initial circular orbit (dashed, center at Planet A (235, 108), radius r1 = 52) -->
+    <circle cx="235" cy="108" r="52" fill="none" stroke="var(--primary)" stroke-width="1.8" stroke-dasharray="5 4" />
+
+    <!-- Post-burn elliptical orbit (solid, center (183, 108), rx = 104, ry = 90.07) -->
+    <ellipse cx="183" cy="108" rx="104" ry="90.07" fill="none" stroke="var(--accent)" stroke-width="2.2" />
+
+    <!-- Dimension line for r2 (from Planet A center x=235 to apoapsis x=79, drawn slightly below axis at y=130) -->
+    <line x1="235" y1="108" x2="235" y2="136" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2" />
+    <line x1="79" y1="108" x2="79" y2="136" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2" />
+    <line x1="232" y1="131" x2="82" y2="131" stroke="var(--text-muted)" stroke-width="1.3" marker-start="url(#arrowMuted)" marker-end="url(#arrowMuted)" />
+    <text x="157" y="146" text-anchor="middle" fill="var(--text)" font-family="Times New Roman, Georgia, serif" font-size="13" font-style="italic">r<tspan dy="3" font-size="9.5" font-style="normal">2</tspan></text>
+
+    <!-- Dimension line for r1 (from Planet A center x=235 to burn point x=287, drawn slightly above axis at y=86) -->
+    <line x1="287" y1="108" x2="287" y2="81" stroke="var(--text-muted)" stroke-width="1" stroke-dasharray="2 2" />
+    <line x1="238" y1="86" x2="284" y2="86" stroke="var(--text-muted)" stroke-width="1.3" marker-start="url(#arrowMuted)" marker-end="url(#arrowMuted)" />
+    <text x="261" y="77" text-anchor="middle" fill="var(--text)" font-family="Times New Roman, Georgia, serif" font-size="13" font-style="italic">r<tspan dy="3" font-size="9.5" font-style="normal">1</tspan></text>
+
+    <!-- Planet A at focus (235, 108) -->
+    <circle cx="235" cy="108" r="11" fill="var(--primary)" opacity="0.2" />
+    <circle cx="235" cy="108" r="7.5" fill="var(--primary)" />
+    <text x="235" y="124" text-anchor="middle" fill="var(--text)" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="700">Planet A</text>
+
+    <!-- Apoapsis point at (79, 108) and velocity vector v2 pointing downward (CCW motion) -->
+    <circle cx="79" cy="108" r="3.5" fill="var(--accent)" />
+    <line x1="79" y1="112" x2="79" y2="145" stroke="var(--accent)" stroke-width="2" marker-end="url(#arrowPurple)" />
+    <text x="64" y="136" text-anchor="end" fill="var(--accent)" font-family="Times New Roman, Georgia, serif" font-size="13.5" font-weight="700" font-style="italic">v<tspan dy="3" font-size="9.5" font-style="normal">2</tspan></text>
+    <text x="72" y="99" text-anchor="end" fill="var(--text-muted)" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10">Farthest</text>
+
+    <!-- Burn point at (287, 108) and post-burn velocity vector v1 pointing upward (CCW motion) -->
+    <circle cx="287" cy="108" r="4.5" fill="var(--warn-border)" />
+    <line x1="287" y1="103" x2="287" y2="56" stroke="var(--accent)" stroke-width="2.2" marker-end="url(#arrowPurple)" />
+    <text x="296" y="68" text-anchor="start" fill="var(--accent)" font-family="Times New Roman, Georgia, serif" font-size="13.5" font-weight="700" font-style="italic">v<tspan dy="3" font-size="9.5" font-style="normal">1</tspan></text>
+    <text x="295" y="112" text-anchor="start" fill="var(--warn-border)" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5" font-weight="700">Burn</text>
+
+    <!-- Legend at bottom -->
+    <line x1="36" y1="205" x2="58" y2="205" stroke="var(--primary)" stroke-width="1.8" stroke-dasharray="4 3" />
+    <text x="63" y="209" fill="var(--text-muted)" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5">Initial circular orbit (<tspan font-family="Times New Roman, Georgia, serif" font-style="italic" font-size="11.5">r</tspan><tspan dy="2" font-size="8.5">1</tspan><tspan dy="-2">)</tspan></text>
+
+    <line x1="206" y1="205" x2="228" y2="205" stroke="var(--accent)" stroke-width="2.2" />
+    <text x="233" y="209" fill="var(--text-muted)" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="10.5">Post-burn ellipse</text>
+  </svg>
+  <p class="orbit-figure-caption">The brief forward burn at radius <i>r</i><sub>1</sub> boosts speed to <i>v</i><sub>1</sub>, stretching the orbit into an ellipse reaching <i>r</i><sub>2</sub>.</p>
+</div>`,
+        tiers: [
+          {
+            // Tier 1 · Conservation Laws Linking r1 and r2
+            question: `Because you have two unknowns (${m("v_1", "<i>v</i><sub>1</sub>")} at ${m("r_1", "<i>r</i><sub>1</sub>")} and ${m("v_2", "<i>v</i><sub>2</sub>")} at ${m("r_2", "<i>r</i><sub>2</sub>")}), which pair of conservation laws lets you solve numerically for ${m("v_1", "<i>v</i><sub>1</sub>")}?`,
+            selfCheck: `Using the diagram above, note the angle between ${m("\\vec{r}", "<span class='vec'>r</span>")} and ${m("\\vec{v}", "<span class='vec'>v</span>")} at both ${m("r_1", "<i>r</i><sub>1</sub>")} and ${m("r_2", "<i>r</i><sub>2</sub>")}, and write the two conservation laws for the coast from ${m("r_1", "<i>r</i><sub>1</sub>")} to ${m("r_2", "<i>r</i><sub>2</sub>")}.`,
+            options: [
+              {
+                id: "A",
+                text: `Set ${m("v_1 = \\sqrt{GM / r_1}", "<i>v</i><sub>1</sub> = &radic;(<i>GM</i> / <i>r</i><sub>1</sub>)")} directly, since the spacecraft starts at radius ${m("r_1", "<i>r</i><sub>1</sub>")}.`,
+                isCorrect: false,
+                feedback: `${m("\\sqrt{GM/r_1}", "&radic;(<i>GM</i>/<i>r</i><sub>1</sub>)")} gives the speed *before* the burn on the circular orbit. Firing the thrusters increases ${m("v_1", "<i>v</i><sub>1</sub>")} so the spacecraft climbs out to ${m("r_2 = 3r_1", "<i>r</i><sub>2</sub> = 3<i>r</i><sub>1</sub>")}.`
+              },
+              {
+                id: "B",
+                text: `Conservation of energy and conservation of linear momentum.`,
+                isCorrect: false,
+                feedback: `Gravity exerts an external central force toward planet A, so linear momentum is not conserved—if ${m("v_1 = v_2", "<i>v</i><sub>1</sub> = <i>v</i><sub>2</sub>")}, the orbit wouldn't slow down as it rises.`
+              },
+              {
+                id: "C",
+                text: `Conservation of energy alone, setting ${m("v_2 = 0", "<i>v</i><sub>2</sub> = 0")} at the farthest point ${m("r_2", "<i>r</i><sub>2</sub>")}.`,
+                isCorrect: false,
+                feedback: `Unlike a radial vertical throw, an orbiting spacecraft still moves sideways at apoapsis (${m("v_2 \\neq 0", "<i>v</i><sub>2</sub> &ne; 0")}). You need a second equation relating ${m("v_2", "<i>v</i><sub>2</sub>")} to ${m("v_1", "<i>v</i><sub>1</sub>")}.`
+              },
+              {
+                id: "D",
+                text: `Conservation of energy and conservation of angular momentum.`,
+                isCorrect: true,
+                feedback: `Spot on! At both apsides, velocity is perpendicular to the radius vector, so ${m("L = mrv", "<i>L</i> = <i>mrv</i>")} is conserved alongside ${m("E = \\tfrac{1}{2}mv^2 - GMm/r", "<i>E</i> = &frac12;<i>mv</i><sup>2</sup> &minus; <i>GMm</i>/<i>r</i>")}. Move to Tier 2 to substitute and compute.`
+              }
+            ]
+          },
+          {
+            // Tier 2 · Eliminating v2 & Numerical Evaluation
+            question: `Since ${m("r_2 / r_1 = 3", "<i>r</i><sub>2</sub> / <i>r</i><sub>1</sub> = 3")}, substituting ${m("v_2 = (r_1/r_2)v_1", "<i>v</i><sub>2</sub> = (<i>r</i><sub>1</sub>/<i>r</i><sub>2</sub>)<i>v</i><sub>1</sub>")} into the energy equation gives which expression for ${m("v_1", "<i>v</i><sub>1</sub>")}?`,
+            options: [
+              {
+                id: "A",
+                text: `${m("v_1 = \\sqrt{\\dfrac{2GM}{r_1}\\,\\dfrac{r_2}{r_1 + r_2}} = \\sqrt{\\dfrac{3}{2}\\,\\dfrac{GM}{r_1}}", "<i>v</i><sub>1</sub> = &radic;[(2<i>GM</i>/<i>r</i><sub>1</sub>)&middot;<i>r</i><sub>2</sub>/(<i>r</i><sub>1</sub> + <i>r</i><sub>2</sub>)] = &radic;(1.5&thinsp;<i>GM</i>/<i>r</i><sub>1</sub>)")}`,
+                isCorrect: true,
+                feedback: `Exactly! Because ${m("1 < 1.5 < 2", "1 &lt; 1.5 &lt; 2")}, ${m("v_1", "<i>v</i><sub>1</sub>")} sits neatly between circular speed (${m("\\sqrt{GM/r_1}", "&radic;(<i>GM</i>/<i>r</i><sub>1</sub>)")}) and escape speed (${m("\\sqrt{2GM/r_1}", "&radic;(2<i>GM</i>/<i>r</i><sub>1</sub>)")}). Plug in ${m("G", "<i>G</i>")}, ${m("M", "<i>M</i>")}, and ${m("r_1", "<i>r</i><sub>1</sub>")} on paper to get the numerical value in m/s!`
+              },
+              {
+                id: "B",
+                text: `${m("v_1 = \\sqrt{\\dfrac{2GM}{r_1}\\,\\dfrac{r_1}{r_1 + r_2}} = \\sqrt{\\dfrac{1}{2}\\,\\dfrac{GM}{r_1}}", "<i>v</i><sub>1</sub> = &radic;[(2<i>GM</i>/<i>r</i><sub>1</sub>)&middot;<i>r</i><sub>1</sub>/(<i>r</i><sub>1</sub> + <i>r</i><sub>2</sub>)] = &radic;(0.5&thinsp;<i>GM</i>/<i>r</i><sub>1</sub>)")}`,
+                isCorrect: false,
+                feedback: `That expression actually gives ${m("v_2", "<i>v</i><sub>2</sub>")} (the slower speed at apoapsis ${m("r_2", "<i>r</i><sub>2</sub>")})! At ${m("r_1", "<i>r</i><sub>1</sub>")}, the spacecraft must move *faster* than circular speed to climb outward.`
+              },
+              {
+                id: "C",
+                text: `${m("v_1 = \\sqrt{\\dfrac{2GM}{r_1}\\left(1 - \\dfrac{r_1}{r_2}\\right)} = \\sqrt{\\dfrac{4}{3}\\,\\dfrac{GM}{r_1}}", "<i>v</i><sub>1</sub> = &radic;[(2<i>GM</i>/<i>r</i><sub>1</sub>)(1 &minus; <i>r</i><sub>1</sub>/<i>r</i><sub>2</sub>)] = &radic;((4/3)&thinsp;<i>GM</i>/<i>r</i><sub>1</sub>)")}`,
+                isCorrect: false,
+                feedback: `Close, but you missed the kinetic energy term ${m("\\tfrac{1}{2}mv_2^2 = \\tfrac{1}{2}mv_1^2 (r_1/r_2)^2", "&frac12;<i>mv</i><sub>2</sub><sup>2</sup> = &frac12;<i>mv</i><sub>1</sub><sup>2</sup>(<i>r</i><sub>1</sub>/<i>r</i><sub>2</sub>)<sup>2</sup>")} on the right-hand side of the energy equation.`
+              }
+            ]
+          }
+        ]
+      }
+    ];
+
+    const STORAGE_KEY = "phys211_practice21_gravity_companion_v2";
+
+    const state = {
+      probIdx: 0,
+      tierIdx: 0, // 0..tiers.length-1, or 'twist'
+      paperFirstDone: {}, // key: stepKey -> boolean
+      theme: "light", // default light mode
+      answers: {} // key: `${probId}:${tierKey}` -> { selectedId, solved }
+    };
+
+    function applyTheme(theme) {
+      const mode = theme === "dark" ? "dark" : "light";
+      state.theme = mode;
+      if (mode === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      } else {
+        document.documentElement.removeAttribute("data-theme");
+      }
+      const iconEl = document.getElementById("themeIcon");
+      const labelEl = document.getElementById("themeLabel");
+      if (iconEl && labelEl) {
+        if (mode === "dark") {
+          iconEl.innerHTML = "&#9728;&#65039;";
+          labelEl.textContent = "Light";
+        } else {
+          iconEl.innerHTML = "&#127769;";
+          labelEl.textContent = "Dark";
+        }
+      }
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed.answers === "object") {
+            state.answers = parsed.answers;
+          }
+          if (parsed && typeof parsed.paperFirstDone === "object") {
+            state.paperFirstDone = parsed.paperFirstDone;
+          }
+          if (parsed && (parsed.theme === "dark" || parsed.theme === "light")) {
+            state.theme = parsed.theme;
+          }
+        }
+      } catch (_) {}
+      applyTheme(state.theme);
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          answers: state.answers,
+          paperFirstDone: state.paperFirstDone,
+          theme: state.theme
+        }));
+      } catch (_) {}
+    }
+
+    function getStepKey(prob, tierIdx) {
+      return `${prob.id}:${tierIdx}`;
+    }
+
+    function isProblemSolved(prob) {
+      return prob.tiers.every((_, idx) => {
+        const rec = state.answers[getStepKey(prob, idx)];
+        return rec && rec.solved;
+      });
+    }
+
+    function renderMathIfAvailable(container) {
+      if (!window.katex) return;
+      const nodes = container.querySelectorAll(".math[data-tex]");
+      nodes.forEach((el) => {
+        const tex = el.getAttribute("data-tex");
+        if (!tex) return;
+        try {
+          el.innerHTML = window.katex.renderToString(tex, {
+            throwOnError: false,
+            displayMode: false
+          });
+          el.removeAttribute("data-tex");
+        } catch (_) {}
+      });
+    }
+
+    window.__katexReady = function () {
+      renderMathIfAvailable(document.body);
+    };
+
+    function renderNav() {
+      const sel = document.getElementById("probSelect");
+      sel.innerHTML = "";
+      let solvedCount = 0;
+      let coreTotal = 0;
+
+      WORKSHEET_DATA.forEach((prob, idx) => {
+        const done = isProblemSolved(prob);
+        if (!prob.isExtra) {
+          coreTotal++;
+          if (done) solvedCount++;
+        }
+
+        const opt = document.createElement("option");
+        opt.value = String(idx);
+        opt.textContent = `${done ? "✓ " : ""}${prob.paperRef}`;
+        if (idx === state.probIdx) {
+          opt.selected = true;
+        }
+        sel.appendChild(opt);
+      });
+
+      const pill = document.getElementById("progressPill");
+      pill.innerHTML = `<strong>${solvedCount}</strong> / ${coreTotal} done`;
+    }
+
+    function renderCard() {
+      const prob = WORKSHEET_DATA[state.probIdx];
+      const isTwist = state.tierIdx === "twist" && prob.extensionTwist;
+      const activeItem = isTwist ? prob.extensionTwist : prob.tiers[state.tierIdx];
+      const stepKey = getStepKey(prob, state.tierIdx);
+      const record = state.answers[stepKey] || { selectedId: null, solved: false };
+
+      const card = document.getElementById("questionCard");
+      const requiresPaperFirst = !!activeItem.selfCheck;
+      const isPaperFirstDone = !requiresPaperFirst || !!state.paperFirstDone[stepKey];
+
+      // Tier pills
+      let tierPillsHtml = `<div class="tier-bar" role="tablist">`;
+      prob.tiers.forEach((_, idx) => {
+        const rec = state.answers[getStepKey(prob, idx)];
+        const isActive = state.tierIdx === idx;
+        const isSolved = rec && rec.solved;
+        tierPillsHtml += `
+          <button type="button" class="tier-pill ${isActive ? "active" : ""} ${isSolved ? "solved" : ""}" data-tier="${idx}">
+            ${isSolved ? "&#10003; " : ""}Tier ${idx + 1}
+          </button>`;
+      });
+      if (prob.extensionTwist) {
+        const rec = state.answers[getStepKey(prob, "twist")];
+        const isActive = isTwist;
+        const isSolved = rec && rec.solved;
+        tierPillsHtml += `
+          <button type="button" class="tier-pill twist ${isActive ? "active" : ""} ${isSolved ? "solved" : ""}" data-tier="twist">
+            ${isSolved ? "&#10003; " : ""}&#9733; Twist
+          </button>`;
+      }
+      tierPillsHtml += `</div>`;
+
+      // Options (hidden until Paper-First "Done" is clicked)
+      let optionsHtml = "";
+      if (isPaperFirstDone) {
+        optionsHtml = `<div class="options-list">`;
+        activeItem.options.forEach((opt) => {
+          let cls = "opt-btn";
+          if (record.selectedId === opt.id) {
+            cls += opt.isCorrect ? " selected-correct" : " selected-wrong";
+          }
+          optionsHtml += `
+            <button type="button" class="${cls}" data-opt="${opt.id}">
+              <span class="opt-letter">${opt.id}</span>
+              <span class="opt-body">${opt.text}</span>
+            </button>`;
+        });
+        optionsHtml += `</div>`;
+      }
+
+      // Feedback
+      let feedbackHtml = `<div class="feedback-box" id="feedbackBox"></div>`;
+      if (isPaperFirstDone && record.selectedId) {
+        const chosen = activeItem.options.find((o) => o.id === record.selectedId);
+        if (chosen) {
+          const kind = chosen.isCorrect ? "correct" : "wrong";
+          const label = chosen.isCorrect ? "Good physical reasoning" : "Re-check that assumption";
+          feedbackHtml = `
+            <div class="feedback-box visible ${kind}" id="feedbackBox">
+              <span class="feedback-label">${label}</span>
+              <div>${chosen.feedback}</div>
+            </div>`;
+        }
+      }
+
+      // Footer buttons
+      const hasNextTier = !isTwist && state.tierIdx < prob.tiers.length - 1;
+      const hasTwistNext = !isTwist && state.tierIdx === prob.tiers.length - 1 && !!prob.extensionTwist;
+      const hasNextProb = state.probIdx < WORKSHEET_DATA.length - 1;
+      const hasPrevProb = state.probIdx > 0;
+
+      let nextLabel = "Next Problem &rarr;";
+      let nextDisabled = !hasNextProb;
+      if (hasNextTier) {
+        nextLabel = `Next: Tier ${state.tierIdx + 2} &rarr;`;
+        nextDisabled = false;
+      } else if (hasTwistNext) {
+        nextLabel = "Try Twist &rarr;";
+        nextDisabled = false;
+      } else if (isTwist && hasNextProb) {
+        const nextProbObj = WORKSHEET_DATA[state.probIdx + 1];
+        nextLabel = nextProbObj && nextProbObj.isExtra ? "Try Extra Problem &rarr;" : "Next Problem &rarr;";
+        nextDisabled = false;
+      } else if (!hasNextProb) {
+        nextLabel = prob.isExtra ? "End of Extra Problem" : "End of Worksheet";
+        nextDisabled = true;
+      }
+
+      const headingHtml = isTwist
+        ? `<p class="tier-heading twist-heading">${activeItem.title}</p>`
+        : "";
+
+      const selfCheckBtnLabel = isPaperFirstDone ? "&#10003; Done" : "Done";
+      const statementHtml = prob.statement
+        ? `<div class="problem-statement-box">${prob.statement}</div>`
+        : "";
+
+      card.innerHTML = `
+        <div class="card-meta">
+          <span class="paper-ref ${prob.isExtra ? "extra-ref" : ""}">${prob.paperRef}</span>
+          ${tierPillsHtml}
+        </div>
+        <p class="paper-cue">${prob.cue}</p>
+        ${statementHtml}
+        ${headingHtml}
+        <p class="question-text">${activeItem.question}</p>
+        ${activeItem.selfCheck ? `
+          <div class="self-check-box ${isPaperFirstDone ? "collapsed" : ""}" id="selfCheckBox">
+            <div class="self-check-header">
+              <span class="self-check-label">Paper-First</span>
+              <button type="button" class="self-check-toggle" id="toggleSelfCheckBtn" aria-pressed="${isPaperFirstDone}">${selfCheckBtnLabel}</button>
+            </div>
+            ${isPaperFirstDone ? "" : `<p class="self-check-body">${activeItem.selfCheck}</p>`}
+          </div>
+        ` : ""}
+        ${optionsHtml}
+        ${feedbackHtml}
+        <div class="card-footer">
+          <button type="button" class="nav-btn" id="prevBtn" ${!hasPrevProb && state.tierIdx === 0 ? "disabled" : ""}>&larr; Back</button>
+          <button type="button" class="nav-btn primary" id="nextBtn" ${nextDisabled ? "disabled" : ""}>${nextLabel}</button>
+        </div>
+      `;
+
+      const toggleScBtn = document.getElementById("toggleSelfCheckBtn");
+      if (toggleScBtn) {
+        toggleScBtn.addEventListener("click", () => {
+          state.paperFirstDone[stepKey] = !state.paperFirstDone[stepKey];
+          saveState();
+          render();
+        });
+      }
+
+      // Bind tier pills
+      card.querySelectorAll(".tier-pill").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const val = btn.getAttribute("data-tier");
+          state.tierIdx = val === "twist" ? "twist" : Number(val);
+          render();
+        });
+      });
+
+      // Bind options
+      card.querySelectorAll(".opt-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const optId = btn.getAttribute("data-opt");
+          const chosen = activeItem.options.find((o) => o.id === optId);
+          if (!chosen) return;
+          const prev = state.answers[stepKey] || { selectedId: null, solved: false };
+          state.answers[stepKey] = {
+            selectedId: optId,
+            solved: prev.solved || chosen.isCorrect
+          };
+          state.paperFirstDone[stepKey] = true;
+          saveState();
+          render();
+        });
+      });
+
+      // Bind prev/next
+      const prevBtn = document.getElementById("prevBtn");
+      prevBtn.addEventListener("click", () => {
+        if (state.tierIdx === "twist") {
+          state.tierIdx = prob.tiers.length - 1;
+        } else if (state.tierIdx > 0) {
+          state.tierIdx--;
+        } else if (state.probIdx > 0) {
+          state.probIdx--;
+          state.tierIdx = 0;
+        }
+        render();
+      });
+
+      const nextBtn = document.getElementById("nextBtn");
+      nextBtn.addEventListener("click", () => {
+        if (hasNextTier) {
+          state.tierIdx++;
+        } else if (hasTwistNext) {
+          state.tierIdx = "twist";
+        } else if (hasNextProb) {
+          state.probIdx++;
+          state.tierIdx = 0;
+        }
+        render();
+      });
+
+      renderMathIfAvailable(card);
+    }
+
+    function render() {
+      renderNav();
+      renderCard();
+    }
+
+    document.getElementById("probSelect").addEventListener("change", (e) => {
+      state.probIdx = Number(e.target.value);
+      state.tierIdx = 0;
+      render();
+    });
+
+    document.getElementById("themeToggleBtn").addEventListener("click", () => {
+      applyTheme(state.theme === "dark" ? "light" : "dark");
+      saveState();
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      state.answers = {};
+      state.paperFirstDone = {};
+      state.probIdx = 0;
+      state.tierIdx = 0;
+      saveState();
+      render();
+    });
+
+    loadState();
+    render();
+  </script>
+</body>
+</html>
